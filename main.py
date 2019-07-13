@@ -1,10 +1,9 @@
 #!-*- encoding: utf-8 -*-
 
+# libreria que se usara para manejar entrada del usuario por teclado
 from argparse import ArgumentParser
 
 from manager import Manager
-
-from tokens import areClose, _areCompatible
 
 
 DESCRIPCION = """Esta es una implementacion del juego de mesa domino.
@@ -40,10 +39,12 @@ def main():
     parser.add_argument('-t', '--tokens-per-player', type=int, default=9,
                         help='number of tokens per player')
     parser.add_argument('-m', '--max-number', type=int, default=9,
-                        help='maximum number in the dominoes tokens')
+                        help='maximum number in the dominoes tokens',
+                        choices=range(0, 10))
 
     args = parser.parse_args()
 
+    # se validan los argumentos
     validateArgs(args)
 
     # se ejecuta la aplicacion

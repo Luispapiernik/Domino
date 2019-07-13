@@ -1,10 +1,29 @@
+#! -*- coding: utf-8 -*-
+
 from utils import *
 from baseObjects import Writable
 
 
 def areClose(token1, token2):
     """
+    Esta funcion retorna la configuracion de conexion que hay entre 2 fichas
+
+    Parametros
+    ----------
+    token1(LightToken | Tokent): ficha uno
+    token2(LightToken | Tokent): ficha dos
+
+    Returns
+    -------
+    int | False: entero entre 1 y 14 que representa que tipo de conexion tienen
+        las fichas, se retorna False si no estan conectadas
     """
+
+    # para detectar que 2 fichas estan conectadas de forma validad, se hace uso
+    # de la separacion entre sus esquinas superior izquierda.
+    # la componente cero de position indica posicion en el eje y(filas), la
+    # componente 1 indica posicion en el eje x(columnas)
+
     verticalDiference = token1.position[0] - token2.position[0]
     horizontalDiference = token1.position[1] - token2.position[1]
 
@@ -27,7 +46,9 @@ def areClose(token1, token2):
     # |* * *|
     # |* * *|
     # +-----+
+    # si las fichas estan en la misma columna
     if token1.position[1] == token2.position[1]:
+        # si ambas fichas estan orientadas de forma vertical
         if token1.isVertical() and token2.isVertical():
             # token1 esta abajo
             if verticalDiference == 9:
@@ -42,7 +63,9 @@ def areClose(token1, token2):
     # |* * *1* * *||* * *2* * *|
     # |* * *|* * *||* * *|* * *|
     # +-----------++-----------+
+    # si ambas fichas estan en la misma fila
     if token1.position[0] == token2.position[0]:
+        # si ambas fichas estan orientadas de forma horizontal
         if token1.isHorizontal() and token2.isHorizontal():
             # token1 esta a la derecha
             if horizontalDiference == 13:
@@ -300,9 +323,22 @@ def areClose(token1, token2):
 
 
 def getFreeSide(token1, token2):
-    """Esta funcion retorna el lado libre de token1 una vez se ha conectado
-       con token2
     """
+    Esta funcion retorna que lado queda libre una vez se han conectado 2 fichas
+
+    Parametros
+    ----------
+    token1(LightToken | Token): ficha uno, el lado libre que se retorna
+        corresponde a esta ficha
+    token2(LightToken | Token): ficha 2, es la ficha que se conecta a la ficha
+        uno
+
+    Return
+    ------
+    int | False: Entero que representa que lado quedo libre, puede ser
+        NUMERATOR, DENOMINATOR o BOTH y se retorna False si no estan conectadas
+    """
+    # se obtiene que tipo de conexion tienen las fichas
     are_close = areClose(token1, token2)
 
     if are_close == PROXIMITYCONFIGURACION_1:
@@ -367,7 +403,20 @@ def getFreeSide(token1, token2):
 
 def _areCompatible(token1, token2):
     """
+    Esta funcion retorna True cuando 2 fichas estan bien conectadas segun las
+    regla del domino y False en caso contrario
+
+    Parametros
+    ----------
+    token1(LightToken | Tokent): ficha uno
+    token2(LightToken | Tokent): ficha dos
+
     """
+
+    # 2 fichas estan bien conectadas si ademas de estar conectadas, los valores
+    # de los numeradores o denominadores coinciden en el punto de conexion
+
+    # se obtiene el tipo de conexion que tienen las fichas
     are_close = areClose(token1, token2)
 
     # +-----+
@@ -633,6 +682,21 @@ def _areCompatible(token1, token2):
 
 
 class LightToken(object):
+    """
+    Esta clase representa una ficha de domino
+
+    Parametros
+    ----------
+    numerator(int): Entero que representa la parte superior o derecha de la
+        fichas
+    denominator(int): Entero que representa la parte inferior o izquierda de la
+        fichas
+    pos((int, int)): Dupla de enteros que representa la posicion de la ficha,
+        primera componente es posicion en fila y segunda componente es posicion
+        en columna
+    orientation(int): Entero que representa la orientacion de la ficha, puede
+        ser HORIZONTAL o VERTICAL
+    """
     def __init__(self, numerator, denominator, pos=[0, 0],
                  orientation=VERTICAL):
         self.numerator = numerator
@@ -641,19 +705,27 @@ class LightToken(object):
         self.position = pos
         self.orientation = orientation
 
-    def __repr__(self):
-        return str([(self.numerator, self.denominator), self.position])
-
     def isVertical(self):
+        """
+        Este metodo retorna True si la ficha esta orientada de forma vertical,
+        False en caso contrario
+        """
         return self.orientation == VERTICAL
 
     def isHorizontal(self):
+        """
+        Este metodo retorna True si la ficha esta orientada de forma
+        horizontal, False en caso contrario
+        """
         return self.orientation == HORIZONTAL
 
     def areConcatenable(self, token):
         """
-        Este metodo retorna True si dos fichas pueden ser compatibles
+        Este metodo retorna True si dos fichas pueden ser compatibles, False
+        en caso contrario
         """
+        # dos fichas pueden ser compatibles si el valo de los denominadores o
+        # numeradores coinciden
         if self.numerator == token.numerator:
             return True
         elif self.numerator == token.denominator:
@@ -667,20 +739,38 @@ class LightToken(object):
 
     def areCompatible(self, token):
         """
-        Este metodo chequea si la ficha es compatible con alguna otra, son
-        fichas compatibles si se pueden poner un despues de la otra siquiendo
-        las reglas del domino
+        Este metodo chequea si la ficha es compatible con alguna otra
         """
+        # Dos fichas son compatibles si se pueden poner un despues de la otra
+        # siquiendo las reglas del domino, es decir, estan bien conectadas
         return _areCompatible(self, token)
 
 
 class Token(LightToken, Writable):
-    def __init__(self, *args, **kwargs):
+    """
+    Esta clase representa una ficha de domino que puede ser mostrada en
+    pantalla
 
+    Parametros
+    ----------
+    numerator(int): Entero que representa la parte superior o derecha de la
+        fichas
+    denominator(int): Entero que representa la parte inferior o izquierda de la
+        fichas
+    pos((int, int)): Dupla de enteros que representa la posicion de la ficha,
+        primera componente es posicion en fila y segunda componente es posicion
+        en columna
+    orientation(int): Entero que representa la orientacion de la ficha, puede
+        ser HORIZONTAL o VERTICAL
+    """
+    def __init__(self, *args, **kwargs):
+        # se llama al inicializador de LightToken
         LightToken.__init__(self, *args, **kwargs)
 
+        # se obtiene la representacion en string de la ficha
         string = self.getString()
 
+        # se llama al inicializador de Writable para poder mostrar en pantalla
         Writable.__init__(self, string, self.position)
 
     def getString(self):

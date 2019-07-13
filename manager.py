@@ -8,11 +8,20 @@ from game import Game
 
 
 class Manager(object):
+    """
+    Esta clase se encarga de manejar todo el ciclo del programa, inicializa
+    todo lo necesario para el juego todo en pantalla, recibe entrada
+    del usuario, gestiona cambio de ventanas,...
+
+    Parametros
+    ----------
+    args(namespace): namespace con los parametros pasados por el usuario
+    """
     def __init__(self, args):
         # variables que mantienen la logica de la apliacion
         self.quit = False
 
-        # inicializacion de todo lo relacionado con curses
+        # se realiza inicializacion de todo lo relacionado con curses
         self.init()
 
         # se inicializan las posibles ventanas del juego
@@ -22,9 +31,12 @@ class Manager(object):
         self.help = Help(*self.stdscr.getmaxyx())
         self.credits = Credits(*self.stdscr.getmaxyx())
 
+        # este atributo contiene referencia a la ventana que se muestra
         self.currentWindow = self.cover
 
     def init(self):
+        # se inicializa curses y se obtiene una referencia a la ventana
+        # principal
         self.stdscr = c.initscr()
 
         # para manejar colores
@@ -45,18 +57,28 @@ class Manager(object):
         c.init_pair(COLOR_SELECTED_PANEL, c.COLOR_GREEN, c.COLOR_BLACK)
 
     def loop(self):
+        # se borra la pantalla
         self.stdscr.erase()
+
+        # se dibuja un borde en la ventana
         self.stdscr.box()
+
+        # se cargan los cambios
         self.stdscr.refresh()
 
         while not self.quit:
+            # se dibuja la ventana, puede ser cover, game, options,...
             self.currentWindow.write()
 
             # se obtiene entrada del usuario
             char = self.stdscr.getch()
 
+            # cada ventana debe retornar a que ventana pasara el programa en
+            # el siguiente ciclo de aplicacion, si retorna NONE es que sigue
+            # en la misma ventana
             nextWindow = self.currentWindow.inputHandler(char)
 
+            # se actualiza el valor de la ventana actual
             if nextWindow == COVER:
                 self.currentWindow = self.cover
             elif nextWindow == PLAY:
