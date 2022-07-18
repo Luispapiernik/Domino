@@ -1,13 +1,14 @@
-import curses as c
+import curses
 from random import choice, randint
 
 from domino.container import BaseContainer
 from domino.info import GameInfo
 from domino.playerboard import PlayerTable
 from domino.players import Computer, Human
+from domino.schemas import Events, Players
 from domino.table import Table
 from domino.tokens import Token
-from domino.utils import *
+from domino.utils import apply_event
 
 
 class Game(BaseContainer):
@@ -25,7 +26,7 @@ class Game(BaseContainer):
     """
 
     def __init__(self, height, width, tokens_per_player=9, max_number=9):
-        window = c.newwin(height, width, 0, 0)
+        window = curses.newwin(height, width, 0, 0)
 
         super().__init__(window)
 
@@ -46,19 +47,19 @@ class Game(BaseContainer):
         ]
 
         # se repareten fichas para cada jugador
-        if self.get_first() == PLAYER:
+        if self.get_first() == Players.PLAYER:
             self.player = Human(self.get_player_tokens(tokens_per_player))
             self.computer = Computer(self.get_player_tokens(tokens_per_player))
-            self.turn = PLAYER
+            self.turn = Players.PLAYER
         else:
             self.computer = Computer(self.get_player_tokens(tokens_per_player))
             self.player = Human(self.get_player_tokens(tokens_per_player))
-            self.turn = COMPUTER
+            self.turn = Players.COMPUTER
 
         # como se esta en proceso de desarrollo, el jugador siempre hara la
         # primera jugada, si se quita esta linea la probabilidad de que el
         # jugador vaya primero es de 50%
-        self.turn = PLAYER
+        self.turn = Players.PLAYER
 
         # se agregan las fichas del jugador al tablero del jugador
         for element in self.player.tokens:
@@ -71,7 +72,7 @@ class Game(BaseContainer):
         """
         Este metodo decide que jugador va primero
         """
-        return choice([PLAYER, COMPUTER])
+        return choice([Players.PLAYER, Players.COMPUTER])
 
     def get_player_tokens(self, token_number):
         """
@@ -89,7 +90,7 @@ class Game(BaseContainer):
 
         return tokens
 
-    @apply_event(113, COVER)  # q
+    @apply_event(113, Events.COVER)  # q
     def input_handler(self, char):
         # la tecla TAB se usa para cambiar de panel, entre el panel con las
         # fichas del jugador y el panel con las fichas jugadas
@@ -100,7 +101,7 @@ class Game(BaseContainer):
         # cuando se presiona la tecla p el jugador ha cedido el turno
         if char == 112:  # p
             self.player.skipped_turns += 1
-            self.turn = COMPUTER
+            self.turn = Players.COMPUTER
         else:
             pass
 
@@ -108,7 +109,7 @@ class Game(BaseContainer):
         self.linter %= self.linterable_objects
 
         # se maneja el turno del jugador
-        if self.turn == PLAYER:
+        if self.turn == Players.PLAYER:
             # si el panel en el que se esta es el de las fichas del jugador
             if self.linter == 1:
                 # se obtiene la ficha, si token toma el valor de None es porque
@@ -140,10 +141,10 @@ class Game(BaseContainer):
                 nextTurn = self.table.input_handler(char)
 
                 if nextTurn:
-                    self.turn = COMPUTER
+                    self.turn = Players.COMPUTER
 
             # se actualiza la informacion del jugador
-            self.info.update_info(self.player.get_info(), player=PLAYER)
+            self.info.update_info(self.player.get_info(), player=Players.PLAYER)
 
         # turno de la maquina
         else:
@@ -161,12 +162,12 @@ class Game(BaseContainer):
                 self.table.locate_computer_token(token)
 
             # se actualiza la informacion de la maquina
-            self.info.update_info(self.computer.get_info(), player=COMPUTER)
+            self.info.update_info(self.computer.get_info(), player=Players.COMPUTER)
 
             # ahora es turno del jugador
-            self.turn = PLAYER
+            self.turn = Players.PLAYER
 
-        return NONE
+        return Events.NONE
 
     def write(self):
         """

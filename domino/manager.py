@@ -1,8 +1,9 @@
-import curses as c
+import curses
 
+from domino.config import settings
 from domino.game import Game
 from domino.pages import Cover, Credits, Help, Options
-from domino.utils import *
+from domino.schemas import Events
 
 
 class Manager:
@@ -16,7 +17,7 @@ class Manager:
     args(namespace): namespace con los parametros pasados por el usuario
     """
 
-    def __init__(self, args):
+    def __init__(self, args) -> None:
         # variables que mantienen la logica de la apliacion
         self.quit = False
 
@@ -33,29 +34,33 @@ class Manager:
         # este atributo contiene referencia a la ventana que se muestra
         self.current_window = self.cover
 
-    def init(self):
+    def init(self) -> None:
         # se inicializa curses y se obtiene una referencia a la ventana
         # principal
-        self.stdscr = c.initscr()
+        self.stdscr = curses.initscr()
 
         # para manejar colores
-        c.start_color()
+        curses.start_color()
 
         # para recibir codigo ascii de las teclas
         self.stdscr.keypad(True)
         # para controlar que se imprimira en pantalla
-        c.noecho()
+        curses.noecho()
         # para leer del teclado sin presionar la tecla enter
-        c.cbreak()
+        curses.cbreak()
 
         # para no mostrar el cursor en pantalla
-        c.curs_set(0)
+        curses.curs_set(0)
 
         # inicializacion de colores
-        c.init_pair(COLOR_SELECTED_ELEMENT, c.COLOR_RED, c.COLOR_BLACK)
-        c.init_pair(COLOR_SELECTED_PANEL, c.COLOR_GREEN, c.COLOR_BLACK)
+        curses.init_pair(
+            settings.color_selected_element, curses.COLOR_RED, curses.COLOR_BLACK
+        )
+        curses.init_pair(
+            settings.color_selected_panel, curses.COLOR_GREEN, curses.COLOR_BLACK
+        )
 
-    def loop(self):
+    def loop(self) -> None:
         # se borra la pantalla
         self.stdscr.erase()
 
@@ -78,20 +83,20 @@ class Manager:
             nextWindow = self.current_window.input_handler(char)
 
             # se actualiza el valor de la ventana actual
-            if nextWindow == COVER:
+            if nextWindow == Events.COVER:
                 self.current_window = self.cover
-            elif nextWindow == PLAY:
+            elif nextWindow == Events.PLAY:
                 self.current_window = self.game
-            elif nextWindow == OPTIONS:
+            elif nextWindow == Events.OPTIONS:
                 self.current_window = self.options
-            elif nextWindow == HELP:
+            elif nextWindow == Events.HELP:
                 self.current_window = self.help
-            elif nextWindow == CREDITS:
+            elif nextWindow == Events.CREDITS:
                 self.current_window = self.credits
-            elif nextWindow == QUIT:
+            elif nextWindow == Events.QUIT:
                 self.quit = True
             else:
                 pass
 
     def end(self):
-        c.endwin()
+        curses.endwin()

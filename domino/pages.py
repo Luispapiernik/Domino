@@ -1,7 +1,8 @@
 import curses
 
 from domino.container import BaseContainer
-from domino.utils import *
+from domino.schemas import Events
+from domino.utils import apply_event, get_center_column, get_center_row
 from domino.writable import Writable
 
 
@@ -24,7 +25,7 @@ class PageNotImplemented(BaseContainer):
             )
         )
 
-    @apply_event(10, COVER)  # ENTER
+    @apply_event(10, Events.COVER)  # ENTER
     def input_handler(self, char):
         pass
 
@@ -67,8 +68,7 @@ class Cover(BaseContainer):
 
         self.add_elements(
             Writable(
-                "Ayuda",
-                (center_position_x + 2, get_center_column("Ayuda", max_width)),
+                "Ayuda", (center_position_x + 2, get_center_column("Ayuda", max_width))
             )
         )
 
@@ -79,8 +79,10 @@ class Cover(BaseContainer):
             )
         )
 
-    @apply_event(curses.KEY_RESIZE, QUIT)  # cuando se cambia dimension de la ventana
-    @apply_event(113, QUIT)  # q
+    @apply_event(
+        curses.KEY_RESIZE, Events.QUIT
+    )  # cuando se cambia dimension de la ventana
+    @apply_event(113, Events.QUIT)  # q
     def input_handler(self, char):
         """
         Este metodo se encarga de manejar entrada del usuario, la clase Cover
@@ -96,15 +98,15 @@ class Cover(BaseContainer):
             self.linter += 1
         elif char == 10:  # ENTER
             if self.linter == 0:
-                return PLAY
+                return Events.PLAY
             elif self.linter == 1:
-                return OPTIONS
+                return Events.OPTIONS
             elif self.linter == 2:
-                return HELP
+                return Events.HELP
             elif self.linter == 3:
-                return CREDITS
+                return Events.CREDITS
             else:
-                return NONE
+                return Events.NONE
         else:
             pass
 
