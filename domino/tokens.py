@@ -1,3 +1,5 @@
+from typing import Dict, List, Tuple, Union
+
 from domino.schemas import ProximitiesConfigurations, TokenOrientations, TokenParts
 from domino.writable import Writable
 
@@ -19,7 +21,7 @@ from domino.writable import Writable
 # +-----------+
 
 # necesarios para la construccion del string que representa a las fichas
-TOKENS_PARTS = [{}, {}]
+TOKENS_PARTS: List[Dict[Union[str, int], Union[str, List[str]]]] = [{}, {}]
 TOKENS_PARTS[TokenOrientations.VERTICAL]["head"] = "+-----+"
 TOKENS_PARTS[TokenOrientations.VERTICAL]["middle"] = "|-----|"
 TOKENS_PARTS[TokenOrientations.VERTICAL][0] = ["|     |", "|     |", "|     |"]
@@ -48,14 +50,18 @@ TOKENS_PARTS[TokenOrientations.HORIZONTAL][8] = ["-***-", "-* *-", "-***-"]
 TOKENS_PARTS[TokenOrientations.HORIZONTAL][9] = ["-***-", "-***-", "-***-"]
 
 
-def are_close(token1, token2):
+def are_close(
+    token1: Union["LightToken", "Token"], token2: Union["LightToken", "Token"]
+) -> bool:
     """
-    Esta funcion retorna la configuracion de conexion que hay entre 2 fichas
+    Esta funcion retorna la configuracion de conexion que hay entre 2 fichas.
 
     Parametros
     ----------
-    token1(LightToken | Tokent): ficha uno
-    token2(LightToken | Tokent): ficha dos
+    token1: Union[LightToken, Token]
+        Ficha uno.
+    token2: Union[LightToken, Token]
+        Ficha dos.
 
     Returns
     -------
@@ -366,21 +372,24 @@ def are_close(token1, token2):
     return False
 
 
-def getFreeSide(token1, token2):
+def getFreeSide(
+    token1: Union["LightToken", "Token"], token2: Union["LightToken", "Token"]
+) -> Union[int, bool]:
     """
-    Esta funcion retorna que lado queda libre una vez se han conectado 2 fichas
+    Esta funcion retorna que lado queda libre una vez se han conectado 2 fichas.
 
     Parametros
     ----------
-    token1(LightToken | Token): ficha uno, el lado libre que se retorna
-        corresponde a esta ficha
-    token2(LightToken | Token): ficha 2, es la ficha que se conecta a la ficha
-        uno
+    token1: Union[LightToken, Token]
+        Ficha uno, el lado libre que se retorna corresponde a esta ficha.
+    token2: Union[LightToken, Token]
+        Ficha 2, es la ficha que se conecta a la ficha uno.
 
     Return
     ------
-    int | False: Entero que representa que lado quedo libre, puede ser
-        TokenParts.NUMERATOR, TokenParts.DENOMINATOR o TokenParts.BOTH y se retorna False si no estan conectadas
+    outs: Union[int, False]
+        Entero que representa que lado quedo libre, puede ser TokenParts.NUMERATOR,
+        TokenParts.DENOMINATOR o TokenParts.BOTH y se retorna False si no estan conectadas
     """
     # se obtiene que tipo de conexion tienen las fichas
     are_close = are_close(token1, token2)
@@ -445,16 +454,19 @@ def getFreeSide(token1, token2):
         return False
 
 
-def _are_compatible(token1, token2):
+def _are_compatible(
+    token1: Union["LightToken", "Token"], token2: Union["LightToken", "Token"]
+) -> bool:
     """
     Esta funcion retorna True cuando 2 fichas estan bien conectadas segun las
-    regla del domino y False en caso contrario
+    regla del domino y False en caso contrario.
 
     Parametros
     ----------
-    token1(LightToken | Tokent): ficha uno
-    token2(LightToken | Tokent): ficha dos
-
+    token1: Union[LightToken, Token]
+        Ficha uno.
+    token2: Union[LightToken, Token]
+        Ficha dos.
     """
 
     # 2 fichas estan bien conectadas si ademas de estar conectadas, los valores
@@ -731,41 +743,45 @@ class LightToken:
 
     Parametros
     ----------
-    numerator(int): Entero que representa la parte superior o derecha de la
-        fichas
-    denominator(int): Entero que representa la parte inferior o izquierda de la
-        fichas
-    pos((int, int)): Dupla de enteros que representa la posicion de la ficha,
-        primera componente es posicion en fila y segunda componente es posicion
-        en columna
-    orientation(int): Entero que representa la orientacion de la ficha, puede
-        ser TokenOrientations.HORIZONTAL o TokenOrientations.VERTICAL
+    numerator: int
+        Entero que representa la parte superior o derecha de la fichas.
+        denominator(int): Entero que representa la parte inferior o izquierda de la fichas
+    pos: Tuple[int, int]
+        Dupla de enteros que representa la posicion de la ficha, primera
+        componente es posicion en fila y segunda componente es posicion en columna
+    orientation: int
+        Entero que representa la orientacion de la ficha, puede ser
+        TokenOrientations.HORIZONTAL o TokenOrientations.VERTICAL
     """
 
     def __init__(
-        self, numerator, denominator, pos=[0, 0], orientation=TokenOrientations.VERTICAL
-    ):
+        self,
+        numerator: int,
+        denominator: int,
+        pos: List[int] = [0, 0],
+        orientation: TokenOrientations = TokenOrientations.VERTICAL,
+    ) -> None:
         self.numerator = numerator
         self.denominator = denominator
 
         self.position = pos
         self.orientation = orientation
 
-    def is_vertical(self):
+    def is_vertical(self) -> bool:
         """
         Este metodo retorna True si la ficha esta orientada de forma vertical,
         False en caso contrario
         """
         return self.orientation == TokenOrientations.VERTICAL
 
-    def is_horizontal(self):
+    def is_horizontal(self) -> bool:
         """
         Este metodo retorna True si la ficha esta orientada de forma
         horizontal, False en caso contrario
         """
         return self.orientation == TokenOrientations.HORIZONTAL
 
-    def are_concatenable(self, token):
+    def are_concatenable(self, token: Union["LightToken", "Token"]) -> bool:
         """
         Este metodo retorna True si dos fichas pueden ser compatibles, False
         en caso contrario
@@ -783,7 +799,7 @@ class LightToken:
         else:
             return False
 
-    def are_compatible(self, token):
+    def are_compatible(self, token: Union["LightToken", "Token"]) -> bool:
         """
         Este metodo chequea si la ficha es compatible con alguna otra
         """
@@ -810,8 +826,7 @@ class Token(LightToken, Writable):
         ser TokenOrientations.HORIZONTAL o TokenOrientations.VERTICAL
     """
 
-    def __init__(self, *args, **kwargs):
-        # se llama al inicializador de LightToken
+    def __init__(self, *args, **kwargs) -> None:
         LightToken.__init__(self, *args, **kwargs)
 
         # se obtiene la representacion en string de la ficha
@@ -820,11 +835,11 @@ class Token(LightToken, Writable):
         # se llama al inicializador de Writable para poder mostrar en pantalla
         Writable.__init__(self, string, self.position)
 
-    def getString(self):
+    def getString(self) -> List[str]:
         """
         Este metodo obtiene la representacion en string de la ficha
         """
-        string = []
+        string: List[str] = []
 
         if self.orientation == TokenOrientations.VERTICAL:
             string.append(TOKENS_PARTS[TokenOrientations.VERTICAL]["head"])
@@ -856,16 +871,16 @@ class Token(LightToken, Writable):
 
         return string
 
-    def reflect(self):
+    def reflect(self) -> None:
         """
-        Este metodo invierte la ficha
+        Este metodo invierte la ficha.
         """
         self.numerator, self.denominator = self.denominator, self.numerator
         self.text = self.getString()
 
-    def rotate(self):
+    def rotate(self) -> None:
         """
-        Este metodo cambia la orientacion de la ficha
+        Este metodo cambia la orientacion de la ficha.
         """
         if self.orientation == TokenOrientations.VERTICAL:
             self.orientation = TokenOrientations.HORIZONTAL

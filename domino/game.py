@@ -1,11 +1,12 @@
 import curses
 from random import choice, randint
+from typing import List
 
 from domino.container import BaseContainer
 from domino.info import GameInfo
 from domino.playerboard import PlayerTable
 from domino.players import Computer, Human
-from domino.schemas import Events, Players
+from domino.schemas import Events, Key, Players
 from domino.table import Table
 from domino.tokens import Token
 from domino.utils import apply_event
@@ -13,21 +14,26 @@ from domino.utils import apply_event
 
 class Game(BaseContainer):
     """
-    Esta se encarga de manejar todo el ciclo del juego
+    Esta se encarga de manejar todo el ciclo del juego.
 
     Parametros
     ----------
-    height(int): Entero que representa la altura de la pantalla
-    width(int): Entero que representa el ancho de la pantalla
-    tokens_per_player(int): Entero que indica cuantas fichas le corresponden
-        a cada jugador
-    max_number(int): Entero que indica el numero maximo que ira en las fichas
-        del domino
+    height: int
+        Entero que representa la altura de la pantalla.
+    width: int
+        Entero que representa el ancho de la pantalla.
+    tokens_per_player: int
+        Entero que indica cuantas fichas le corresponden a cada jugador.
+    max_number: int
+        Entero que indica el numero maximo que ira en las fichas del domino.
     """
 
-    def __init__(self, height, width, tokens_per_player=9, max_number=9):
+    def __init__(
+        self, height: int, width: int, tokens_per_player: int = 9, max_number: int = 9
+    ) -> None:
         window = curses.newwin(height, width, 0, 0)
 
+        self.linter: int
         super().__init__(window)
 
         # se crean los diferentes paneles que se mostraran en la ventana del
@@ -68,18 +74,18 @@ class Game(BaseContainer):
         # se actualiza la informacion de los jugadores
         self.info.init_info(self.player.get_info(), self.computer.get_info())
 
-    def get_first(self):
+    def get_first(self) -> Players:
         """
         Este metodo decide que jugador va primero
         """
         return choice([Players.PLAYER, Players.COMPUTER])
 
-    def get_player_tokens(self, token_number):
+    def get_player_tokens(self, token_number: int) -> List[Token]:
         """
         Este metodo elimina y retorna un numero de fichas del total de fichas
         del juego
         """
-        tokens = []
+        tokens: List[Token] = []
 
         while len(tokens) < token_number:
             # se van elijiendo fichas de forma aleatoria
@@ -91,7 +97,7 @@ class Game(BaseContainer):
         return tokens
 
     @apply_event(113, Events.COVER)  # q
-    def input_handler(self, char):
+    def input_handler(self, char: Key) -> Events:
         # la tecla TAB se usa para cambiar de panel, entre el panel con las
         # fichas del jugador y el panel con las fichas jugadas
         if char == 9:  # TAB
@@ -169,7 +175,7 @@ class Game(BaseContainer):
 
         return Events.NONE
 
-    def write(self):
+    def write(self) -> None:
         """
         Este metodo dibuja todo en pantalla
         """
@@ -177,7 +183,6 @@ class Game(BaseContainer):
         # resaltado
         color_linter = None
         for i in range(len(self.elements)):
-
             element, _ = self.elements[i]
 
             # si el i coincide con self.linter, entonces se debe resaltar el

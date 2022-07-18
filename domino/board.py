@@ -1,4 +1,7 @@
+import curses
+
 from domino.container import BaseContainer
+from domino.schemas import Key
 
 
 class Board(BaseContainer):
@@ -7,21 +10,27 @@ class Board(BaseContainer):
 
     Parametros
     ----------
-    window(Window): tablero en donde se dibujaran las fichas
-    vertical_scrollable(bool): Booleano que indica si las fichas se pueden mover
-        en direccion vertical
-    horizontal_scrollable(bool): Booleano que indica si las fichas se pueden
-        mover en direccion horizontal
+    window: curses.window
+        Tablero en donde se dibujaran las fichas.
+    vertical_scrollable: bool
+        Booleano que indica si las fichas se pueden mover en direccion vertical.
+    horizontal_scrollable: bool
+        Booleano que indica si las fichas se pueden mover en direccion horizontal.
     """
 
-    def __init__(self, window, vertical_scrollable=True, horizontal_scrollable=True):
+    def __init__(
+        self,
+        window: curses.window,
+        vertical_scrollable: bool = True,
+        horizontal_scrollable: bool = True,
+    ) -> None:
 
         super().__init__(window)
 
         self.vertical_scrollable = vertical_scrollable
         self.horizontal_scrollable = horizontal_scrollable
 
-    def input_handler(self, char):
+    def input_handler(self, char: Key) -> None:
         # el scrolling de las fichas se maneja con la variable zero_position que
         # es el corrimiento que se debe agregar a su posicion en el momento de
         # dibujarlas

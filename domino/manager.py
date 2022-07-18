@@ -1,4 +1,5 @@
 import curses
+from argparse import Namespace
 
 from domino.config import settings
 from domino.game import Game
@@ -14,10 +15,11 @@ class Manager:
 
     Parametros
     ----------
-    args(namespace): namespace con los parametros pasados por el usuario
+    args: argparse.Namespace
+        Namespace con los parametros pasados por el usuario.
     """
 
-    def __init__(self, args) -> None:
+    def __init__(self, _: Namespace) -> None:
         # variables que mantienen la logica de la apliacion
         self.quit = False
 
@@ -98,5 +100,5 @@ class Manager:
             else:
                 pass
 
-    def end(self):
+    def end(self) -> None:
         curses.endwin()

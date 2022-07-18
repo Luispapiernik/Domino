@@ -1,4 +1,4 @@
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 
 from domino.manager import Manager
 
@@ -22,7 +22,7 @@ use la tecla p y para salir del programa use la letra q
 """
 
 
-def validate_args(args):
+def validate_args(_: Namespace) -> None:
     """
     Esta funcion lanza un error si los parametros no tienen valores validos
     """

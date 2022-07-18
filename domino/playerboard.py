@@ -8,12 +8,14 @@ from domino.writable import Writable
 class PlayerTable(Board):
     """
     Esta clase representa el tablero en donde se ubicaran las fichas del
-    jugador
+    jugador.
 
     Parametros
     ----------
-    max_height(int): altura de la ventana
-    max_width(int): ancho de la ventana
+    max_height: int
+        Altura de la ventana.
+    max_width: int
+        Ancho de la ventana.
     """
 
     def __init__(self, max_height: int, max_width: int):

@@ -1,8 +1,9 @@
 import curses
+from typing import List, Optional, Union
 
 from domino.board import Board
-from domino.schemas import TokenOrientations, TokenParts
-from domino.tokens import LightToken, getFreeSide
+from domino.schemas import Key, TokenOrientations, TokenParts
+from domino.tokens import LightToken, Token, getFreeSide
 
 
 class Table(Board):
@@ -10,7 +11,7 @@ class Table(Board):
     Esta clase representa el panel en donde iran las fichas jugadas
     """
 
-    def __init__(self, max_height, max_width):
+    def __init__(self, max_height: int, max_width: int) -> None:
         window = curses.newwin(max_height - 13, max_width - 30, 1, 1)
 
         super().__init__(window)
@@ -27,10 +28,10 @@ class Table(Board):
         # o en el siguiente caso [5 | 3] right y left toman el mismo valor,
         # esto es, [5 | 3]. Se inicializa su valor con None porque al principio
         # no hay fichas ubicadas en el tablero
-        self.right = None
-        self.left = None
+        self.right: Optional[Token] = None
+        self.left: Optional[Token] = None
 
-    def get_tokens(self):
+    def get_tokens(self) -> List[Token]:
         """
         Este metodo retorna todas las fichas que han sido jugadas, es decir,
         las que estan en el tablero
@@ -43,7 +44,7 @@ class Table(Board):
 
         return tokens
 
-    def is_valid_position(self):
+    def is_valid_position(self) -> bool:
         """
         Este metodo chequea si el jugador ha posicionado de forma correcta una
         ficha
@@ -63,6 +64,7 @@ class Table(Board):
 
             return True
 
+        other: Token
         if (self.right is not None) and self.right.are_compatible(token):
             temporal_token, other = self.right, self.left
         elif (self.left is not None) and self.left.are_compatible(token):
@@ -101,7 +103,7 @@ class Table(Board):
 
         return True
 
-    def input_handler(self, char):
+    def input_handler(self, char: Key) -> bool:
         super().input_handler(char)
 
         # si se presiona ENTER el jugador ha terminado de posicionar una ficha
@@ -149,10 +151,10 @@ class Table(Board):
         # no se cambia de turno
         return False
 
-    def locate_token(self, token):
+    def locate_token(self, token: Token) -> None:
         """
         Este metodo inicia el proceso de posicionamiento de una ficha del
-        jugador en pantalla
+        jugador en pantalla.
         """
         # se posiciona la ficha en la mitad de la pantalla
         token.position[0] = self.height // 2 - 7 - self.zero_position[0]
@@ -167,7 +169,7 @@ class Table(Board):
         # aumentar en uno
         self.linter += 1
 
-    def locate_computer_token(self, token):
+    def locate_computer_token(self, token: Token) -> None:
         """
         Este metodo posiciona la ficha del computador en el tablero
         """
@@ -178,6 +180,7 @@ class Table(Board):
         self.linter += 1
 
         # se revisa a que extremo se deberia agregar la ficha
+        temporal_token: Token
         if token.are_concatenable(self.right):
             temporal_token = self.right
         else:
@@ -217,11 +220,12 @@ class Table(Board):
             else:
                 token.position[1] += 13
 
-    def is_valid_token(self, light_token):
+    def is_valid_token(self, light_token: Union[LightToken, Token]) -> bool:
         """
-        Este metodo retorna True si un token puede ser posicionado en pantalla
+        Este metodo retorna True si un token puede ser posicionado en pantalla.
 
-        light_token(LightToken| Token): token que sera posicionado
+        light_token: Union[LightToken, Token]
+            Token que sera posicionado.
         """
         # un token es valido si se puede conectar a cualquiera de las 2 ramas
         # del domino

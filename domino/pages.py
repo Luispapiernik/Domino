@@ -1,7 +1,7 @@
 import curses
 
 from domino.container import BaseContainer
-from domino.schemas import Events
+from domino.schemas import Events, Key
 from domino.utils import apply_event, get_center_column, get_center_row
 from domino.writable import Writable
 
@@ -11,7 +11,7 @@ class PageNotImplemented(BaseContainer):
     Esta clase reprensenta alguna ventana que no ha sido implementada
     """
 
-    def __init__(self, height, width):
+    def __init__(self, height: int, width: int) -> None:
         window = curses.newwin(height, width, 0, 0)
 
         super().__init__(window)
@@ -26,7 +26,7 @@ class PageNotImplemented(BaseContainer):
         )
 
     @apply_event(10, Events.COVER)  # ENTER
-    def input_handler(self, char):
+    def input_handler(self, _: Key) -> Events:
         pass
 
 
@@ -37,11 +37,13 @@ class Cover(BaseContainer):
 
     Parametros
     ----------
-    max_height(int): altura de la ventana
-    max_width(int): ancho de la ventana
+    max_height: int
+        Altura de la ventana.
+    max_width: int
+        Ancho de la ventana.
     """
 
-    def __init__(self, max_height, max_width):
+    def __init__(self, max_height: int, max_width: int) -> None:
         # se crea la ventana en donde se dibujaran los elementos
         window = curses.newwin(max_height, max_width, 0, 0)
 
@@ -83,7 +85,7 @@ class Cover(BaseContainer):
         curses.KEY_RESIZE, Events.QUIT
     )  # cuando se cambia dimension de la ventana
     @apply_event(113, Events.QUIT)  # q
-    def input_handler(self, char):
+    def input_handler(self, char: Key) -> Events:
         """
         Este metodo se encarga de manejar entrada del usuario, la clase Cover
         solo gestiona el cambio de ventana

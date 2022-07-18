@@ -1,24 +1,28 @@
 from random import choice
+from typing import List, Optional
+
+from domino.tokens import Token
 
 
 class Player:
     """
-    Esta clase representa a un jugador
+    Esta clase representa a un jugador.
 
     Parametros
     ----------
-    tokens(list(Token)): lista con las fichas del jugador
+    tokens: List[Token]
+        Lista con las fichas del jugador.
     """
 
-    def __init__(self, tokens):
+    def __init__(self, tokens: List[Token]) -> None:
         self.tokens = tokens
 
         self.skipped_turns = 0
         self.stolen_tokens = 0
 
-    def get_info(self):
+    def get_info(self) -> List[str]:
         """
-        Este metodo retorna toda la informacion asociada con un jugador
+        Este metodo retorna toda la informacion asociada con un jugador.
         """
         information = [
             "Tokens: %d" % len(self.tokens),
@@ -28,14 +32,16 @@ class Player:
 
         return information
 
-    def get_token(self, numerator, denominator):
+    def get_token(self, numerator: int, denominator: int) -> Token:
         """
-        Este metodo elimina y retorna una ficha del jugador
+        Este metodo elimina y retorna una ficha del jugador.
 
         Parameters
         ----------
-        numerator(int): valor del numerador de la ficha a eliminar
-        denominator(int): valor del denominador de la ficha a eliminar
+        numerator: int
+            Valor del numerador de la ficha a eliminar.
+        denominator: int
+            Valor del denominador de la ficha a eliminar.
         """
         for token in self.tokens:
             if token.numerator == numerator and token.denominator == denominator:
@@ -45,7 +51,7 @@ class Player:
 
 class Human(Player):
     """
-    Esta clase representa a un jugador humano
+    Esta clase representa a un jugador humano.
     """
 
     pass
@@ -53,25 +59,28 @@ class Human(Player):
 
 class Computer(Player):
     """
-    Esta clase representa a la maquina
+    Esta clase representa a la maquina.
     """
 
-    def make_move(self, tokens, right, left):
+    def make_move(
+        self, tokens: List[Token], right: Token, left: Token
+    ) -> Optional[Token]:
         """
-        Este metodo realiza la jugada de la maquina
+        Este metodo realiza la jugada de la maquina.
 
         Parameters
         ----------
-        tokens(list(Token)): lista con las fichas que han sido jugadas
-        right(Token): representa la ultima ficha jugada en uno de los lados
-            del domino
-        left(Token): representa la ultima ficha jugada en el lado restante del
-            domino
+        tokens: List[Token]
+            Lista con las fichas que han sido jugadas.
+        right: Token
+            Representa la ultima ficha jugada en uno de los lados del domino.
+        left: Token
+            Representa la ultima ficha jugada en el lado restante del domino.
 
         Returns
         -------
-        Token | None: retorna una ficha a jugar, retorna None si no ha jugadas
-            posibles
+        out: Optional[Token]
+            Retorna una ficha a jugar, retorna None si no ha jugadas posibles
         """
         # si no hay fichas en el tablero, se elijira una al azar entre las
         # fichas propias

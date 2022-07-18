@@ -1,7 +1,7 @@
 import curses
-from typing import Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
-from domino.schemas import Events, Key
+from domino.schemas import Key
 from domino.writable import Writable
 
 
@@ -24,12 +24,12 @@ class BaseContainer:
 
         # In every item, the second component indicates if the writable element
         # must be highlighted or not.
-        self.elements: Tuple[Writable, bool] = []
+        self.elements: List[Tuple[Writable, bool]] = []
 
         # index of the element to highligh
-        self.linter = 0  # indice del elemento a resaltar
+        self.linter: int = 0  # indice del elemento a resaltar
         # Number of highlightable elements.
-        self.linterable_objects = 0
+        self.linterable_objects: int = 0
 
     def add_elements(self, element: Writable, linterable: bool = True) -> None:
         """
@@ -46,7 +46,7 @@ class BaseContainer:
         if linterable:
             self.linterable_objects += 1
 
-    def input_handler(self, char: Key) -> Events:
+    def input_handler(self, _: Key) -> Any:
         """
         This method defined how the container reacts to user inputs.
         """
