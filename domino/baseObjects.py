@@ -1,9 +1,7 @@
-#! -*- coding: utf-8 -*-
-
 import curses as c
 
 
-class Writable(object):
+class Writable:
     """
     Esta clase representa algo que puede ser dibujado en pantalla, basicamente
     es texto
@@ -13,6 +11,7 @@ class Writable(object):
     text(str): contiene el valor del string que representa
     position((int, int)): posicion
     """
+
     def __init__(self, text, position):
         # texto que sera dibujado
         self.text = text
@@ -52,7 +51,7 @@ class Writable(object):
             window.attroff(c.color_pair(colorLinter))
 
 
-class BaseContainer(object):
+class BaseContainer:
     """
     Esta clase representa un panel, que no es mas que un contenedor para
     objetos que se pueden escribir en pantalla
@@ -62,6 +61,7 @@ class BaseContainer(object):
     window(Window): Representa la ventana en donde se dibujaran los elementos
         del contenedor
     """
+
     def __init__(self, window):
         self.window = window
 

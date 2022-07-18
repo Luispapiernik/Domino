@@ -1,7 +1,5 @@
-#! -*- coding: utf-8 -*-
-
-from utils import *
-from baseObjects import Writable
+from domino.baseObjects import Writable
+from domino.utils import *
 
 
 def areClose(token1, token2):
@@ -681,7 +679,7 @@ def _areCompatible(token1, token2):
         return False
 
 
-class LightToken(object):
+class LightToken:
     """
     Esta clase representa una ficha de domino
 
@@ -697,8 +695,8 @@ class LightToken(object):
     orientation(int): Entero que representa la orientacion de la ficha, puede
         ser HORIZONTAL o VERTICAL
     """
-    def __init__(self, numerator, denominator, pos=[0, 0],
-                 orientation=VERTICAL):
+
+    def __init__(self, numerator, denominator, pos=[0, 0], orientation=VERTICAL):
         self.numerator = numerator
         self.denominator = denominator
 
@@ -763,6 +761,7 @@ class Token(LightToken, Writable):
     orientation(int): Entero que representa la orientacion de la ficha, puede
         ser HORIZONTAL o VERTICAL
     """
+
     def __init__(self, *args, **kwargs):
         # se llama al inicializador de LightToken
         LightToken.__init__(self, *args, **kwargs)
@@ -780,30 +779,30 @@ class Token(LightToken, Writable):
         string = []
 
         if self.orientation == VERTICAL:
-            string.append(TOKENS_PARTS[VERTICAL]['head'])
+            string.append(TOKENS_PARTS[VERTICAL]["head"])
             string.extend(TOKENS_PARTS[VERTICAL][self.numerator])
-            string.append(TOKENS_PARTS[VERTICAL]['middle'])
+            string.append(TOKENS_PARTS[VERTICAL]["middle"])
             string.extend(TOKENS_PARTS[VERTICAL][self.denominator])
-            string.append(TOKENS_PARTS[VERTICAL]['head'])
+            string.append(TOKENS_PARTS[VERTICAL]["head"])
         else:
             for i in range(5):
-                s = TOKENS_PARTS[HORIZONTAL]['head'][i]
+                s = TOKENS_PARTS[HORIZONTAL]["head"][i]
 
                 s += TOKENS_PARTS[HORIZONTAL][self.numerator][0][i]
-                s += TOKENS_PARTS[HORIZONTAL]['space'][i]
+                s += TOKENS_PARTS[HORIZONTAL]["space"][i]
                 s += TOKENS_PARTS[HORIZONTAL][self.numerator][1][i]
-                s += TOKENS_PARTS[HORIZONTAL]['space'][i]
+                s += TOKENS_PARTS[HORIZONTAL]["space"][i]
                 s += TOKENS_PARTS[HORIZONTAL][self.numerator][2][i]
 
-                s += TOKENS_PARTS[HORIZONTAL]['middle'][i]
+                s += TOKENS_PARTS[HORIZONTAL]["middle"][i]
 
                 s += TOKENS_PARTS[HORIZONTAL][self.denominator][0][i]
-                s += TOKENS_PARTS[HORIZONTAL]['space'][i]
+                s += TOKENS_PARTS[HORIZONTAL]["space"][i]
                 s += TOKENS_PARTS[HORIZONTAL][self.denominator][1][i]
-                s += TOKENS_PARTS[HORIZONTAL]['space'][i]
+                s += TOKENS_PARTS[HORIZONTAL]["space"][i]
                 s += TOKENS_PARTS[HORIZONTAL][self.denominator][2][i]
 
-                s += TOKENS_PARTS[HORIZONTAL]['head'][i]
+                s += TOKENS_PARTS[HORIZONTAL]["head"][i]
 
                 string.append(s)
 

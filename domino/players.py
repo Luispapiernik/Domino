@@ -1,9 +1,7 @@
-#! -*- coding: utf-8 -*-
-
 from random import choice
 
 
-class Player(object):
+class Player:
     """
     Esta clase representa a un jugador
 
@@ -11,6 +9,7 @@ class Player(object):
     ----------
     tokens(list(Token)): lista con las fichas del jugador
     """
+
     def __init__(self, tokens):
         self.tokens = tokens
 
@@ -21,9 +20,11 @@ class Player(object):
         """
         Este metodo retorna toda la informacion asociada con un jugador
         """
-        information = ['Tokens: %d' % len(self.tokens),
-                       'Stolen Tokens: %d' % self.stolenTokens,
-                       'Skipped Turns: %d' % self.skippedTurns]
+        information = [
+            "Tokens: %d" % len(self.tokens),
+            "Stolen Tokens: %d" % self.stolenTokens,
+            "Skipped Turns: %d" % self.skippedTurns,
+        ]
 
         return information
 
@@ -37,8 +38,7 @@ class Player(object):
         denominator(int): valor del denominador de la ficha a eliminar
         """
         for token in self.tokens:
-            if token.numerator == numerator and \
-                    token.denominator == denominator:
+            if token.numerator == numerator and token.denominator == denominator:
                 self.tokens.remove(token)
                 return token
 
@@ -47,6 +47,7 @@ class Human(Player):
     """
     Esta clase representa a un jugador humano
     """
+
     pass
 
 
@@ -54,6 +55,7 @@ class Computer(Player):
     """
     Esta clase representa a la maquina
     """
+
     def makeMove(self, tokens, right, left):
         """
         Este metodo realiza la jugada de la maquina
@@ -83,8 +85,7 @@ class Computer(Player):
 
         # se itera sobre las fichas propias
         for token in self.tokens:
-            if token.areConcatenable(right) or \
-                    token.areConcatenable(left):
+            if token.areConcatenable(right) or token.areConcatenable(left):
                 posibleTokens.append(token)
 
         # si no hay jugadas disponibles

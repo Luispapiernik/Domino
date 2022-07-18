@@ -1,16 +1,12 @@
-#! -*- coding: utf-8 -*-
-
-from random import randint, choice
 import curses as c
+from random import choice, randint
 
-from utils import *
-from baseObjects import BaseContainer
-
-from tokens import Token
-from boards import Table, PlayerTable
-from info import GameInfo
-
-from players import Human, Computer
+from domino.baseObjects import BaseContainer
+from domino.boards import PlayerTable, Table
+from domino.info import GameInfo
+from domino.players import Computer, Human
+from domino.tokens import Token
+from domino.utils import *
 
 
 class Game(BaseContainer):
@@ -26,10 +22,11 @@ class Game(BaseContainer):
     max_number(int): Entero que indica el numero maximo que ira en las fichas
         del domino
     """
+
     def __init__(self, height, width, tokens_per_player=9, max_number=9):
         window = c.newwin(height, width, 0, 0)
 
-        super(Game, self).__init__(window)
+        super().__init__(window)
 
         # se crean los diferentes paneles que se mostraran en la ventana del
         # juego
@@ -43,8 +40,9 @@ class Game(BaseContainer):
         self.addElements(self.info, False)
 
         # se crean las fichas del juego
-        self.tokens = [Token(i, j) for i in range(max_number + 1)
-                       for j in range(i, max_number + 1)]
+        self.tokens = [
+            Token(i, j) for i in range(max_number + 1) for j in range(i, max_number + 1)
+        ]
 
         # se repareten fichas para cada jugador
         if self.getFirst() == PLAYER:
@@ -119,8 +117,7 @@ class Game(BaseContainer):
                 # se revisa si la jugada es valida
                 if (token is not None) and self.table.isValidToken(token):
                     # cuando la jugada es valida se obtiene la ficha
-                    token = self.player.getToken(token.numerator,
-                                                 token.denominator)
+                    token = self.player.getToken(token.numerator, token.denominator)
 
                     # la ficha ya no esta en el panel del jugador
                     self.playerTable.elements.remove((token, True))
@@ -151,14 +148,13 @@ class Game(BaseContainer):
         else:
             # se obtiene jugada del computador, si token toma el valor de None
             # es porque no habia jugada disponible
-            token = self.computer.makeMove(self.table.getTokens(),
-                                           self.table.right,
-                                           self.table.left)
+            token = self.computer.makeMove(
+                self.table.getTokens(), self.table.right, self.table.left
+            )
 
             if (token is not None) and self.table.isValidToken(token):
                 # cuando la jugada es valida se obtiene la ficha
-                token = self.computer.getToken(token.numerator,
-                                               token.denominator)
+                token = self.computer.getToken(token.numerator, token.denominator)
 
                 # se ubica la ficha del computador
                 self.table.locateComputerToken(token)
