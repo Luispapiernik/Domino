@@ -1,10 +1,11 @@
 import curses as c
 from random import choice, randint
 
-from domino.baseObjects import BaseContainer
-from domino.boards import PlayerTable, Table
+from domino.container import BaseContainer
 from domino.info import GameInfo
+from domino.playerboard import PlayerTable
 from domino.players import Computer, Human
+from domino.table import Table
 from domino.tokens import Token
 from domino.utils import *
 

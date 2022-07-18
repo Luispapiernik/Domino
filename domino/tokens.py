@@ -1,5 +1,5 @@
-from domino.baseObjects import Writable
 from domino.utils import *
+from domino.writable import Writable
 
 
 def are_close(token1, token2):

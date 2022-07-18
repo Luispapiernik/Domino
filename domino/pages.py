@@ -1,5 +1,8 @@
-from domino.baseObjects import *
+import curses
+
+from domino.container import BaseContainer
 from domino.utils import *
+from domino.writable import Writable
 
 
 class PageNotImplemented(BaseContainer):
@@ -8,7 +11,7 @@ class PageNotImplemented(BaseContainer):
     """
 
     def __init__(self, height, width):
-        window = c.newwin(height, width, 0, 0)
+        window = curses.newwin(height, width, 0, 0)
 
         super().__init__(window)
 
@@ -16,7 +19,7 @@ class PageNotImplemented(BaseContainer):
 
         self.add_elements(
             Writable(
-                ["No implementado"],
+                "No implementado",
                 (center_position_x, get_center_column("No implementado", width)),
             )
         )
@@ -39,7 +42,7 @@ class Cover(BaseContainer):
 
     def __init__(self, max_height, max_width):
         # se crea la ventana en donde se dibujaran los elementos
-        window = c.newwin(max_height, max_width, 0, 0)
+        window = curses.newwin(max_height, max_width, 0, 0)
 
         # se llama al inicializador del padre
         super().__init__(window)
@@ -51,32 +54,32 @@ class Cover(BaseContainer):
         # se agregan los elementos
         self.add_elements(
             Writable(
-                ["Jugar"], (center_position_x, get_center_column("Jugar", max_width))
+                "Jugar", (center_position_x, get_center_column("Jugar", max_width))
             )
         )
 
         self.add_elements(
             Writable(
-                ["Opciones"],
+                "Opciones",
                 (center_position_x + 1, get_center_column("Opciones", max_width)),
             )
         )
 
         self.add_elements(
             Writable(
-                ["Ayuda"],
+                "Ayuda",
                 (center_position_x + 2, get_center_column("Ayuda", max_width)),
             )
         )
 
         self.add_elements(
             Writable(
-                ["Credito"],
+                "Credito",
                 (center_position_x + 3, get_center_column("Credito", max_width)),
             )
         )
 
-    @apply_event(c.KEY_RESIZE, QUIT)  # cuando se cambia dimension de la ventana
+    @apply_event(curses.KEY_RESIZE, QUIT)  # cuando se cambia dimension de la ventana
     @apply_event(113, QUIT)  # q
     def input_handler(self, char):
         """

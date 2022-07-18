@@ -1,48 +1,8 @@
-import curses as c
+import curses
 
-from domino.baseObjects import BaseContainer
+from domino.board import Board
+from domino.schemas import TokenOrientations, TokenParts
 from domino.tokens import LightToken, getFreeSide
-from domino.utils import *
-
-
-class Board(BaseContainer):
-    """
-    Esta clase representa un panel en donde se pueden ubicar fichas
-
-    Parametros
-    ----------
-    window(Window): tablero en donde se dibujaran las fichas
-    vertical_scrollable(bool): Booleano que indica si las fichas se pueden mover
-        en direccion vertical
-    horizontal_scrollable(bool): Booleano que indica si las fichas se pueden
-        mover en direccion horizontal
-    """
-
-    def __init__(self, window, vertical_scrollable=True, horizontal_scrollable=True):
-
-        super().__init__(window)
-
-        self.vertical_scrollable = vertical_scrollable
-        self.horizontal_scrollable = horizontal_scrollable
-
-    def input_handler(self, char):
-        # el scrolling de las fichas se maneja con la variable zero_position que
-        # es el corrimiento que se debe agregar a su posicion en el momento de
-        # dibujarlas
-
-        # manejando scrolling de las fichas
-        if self.vertical_scrollable:
-            if char == 259:  # UP
-                self.zero_position[0] -= 1
-            if char == 258:  # DOWN
-                self.zero_position[0] += 1
-        if self.horizontal_scrollable:
-            if char == 260:  # RIGHT
-                self.zero_position[1] -= 1
-            if char == 261:  # LEFT
-                self.zero_position[1] += 1
-        if char == 114:  # r
-            self.elements[self.linter][0].reflect()
 
 
 class Table(Board):
@@ -51,7 +11,7 @@ class Table(Board):
     """
 
     def __init__(self, max_height, max_width):
-        window = c.newwin(max_height - 13, max_width - 30, 1, 1)
+        window = curses.newwin(max_height - 13, max_width - 30, 1, 1)
 
         super().__init__(window)
 
@@ -118,10 +78,10 @@ class Table(Board):
         if token.numerator == token.denominator:
             temporal_token.numerator = token.numerator
             temporal_token.denominator = token.denominator
-        elif freeSide == NUMERATOR:
+        elif freeSide == TokenParts.NUMERATOR:
             temporal_token.numerator = token.numerator
             temporal_token.denominator = -1
-        elif freeSide == DENOMINATOR:
+        elif freeSide == TokenParts.DENOMINATOR:
             temporal_token.numerator = -1
             temporal_token.denominator = token.denominator
         else:
@@ -132,9 +92,9 @@ class Table(Board):
 
             if other.numerator == other.denominator:
                 pass
-            elif freeSide == NUMERATOR:
+            elif freeSide == TokenParts.NUMERATOR:
                 other.denominator = -1
-            elif freeSide == DENOMINATOR:
+            elif freeSide == TokenParts.DENOMINATOR:
                 other.numerator = -1
             else:
                 pass
@@ -235,24 +195,24 @@ class Table(Board):
         if token.numerator == temporal_token.numerator:
             token.reflect()
 
-            if token.orientation == VERTICAL:
+            if token.orientation == TokenOrientations.VERTICAL:
                 token.position[0] -= 9
             else:
                 token.position[1] -= 13
         elif token.denominator == temporal_token.numerator:
-            if token.orientation == VERTICAL:
+            if token.orientation == TokenOrientations.VERTICAL:
                 token.position[0] -= 9
             else:
                 token.position[1] -= 13
         elif token.numerator == temporal_token.denominator:
-            if token.orientation == VERTICAL:
+            if token.orientation == TokenOrientations.VERTICAL:
                 token.position[0] += 9
             else:
                 token.position[1] += 13
         else:
             token.reflect()
 
-            if token.orientation == VERTICAL:
+            if token.orientation == TokenOrientations.VERTICAL:
                 token.position[0] += 9
             else:
                 token.position[1] += 13
@@ -286,38 +246,3 @@ class Table(Board):
             is_valid = is_valid or self.left.are_concatenable(light_token)
 
         return is_valid
-
-
-class PlayerTable(Board):
-    """
-    Esta clase representa el tablero en donde se ubicaran las fichas del
-    jugador
-
-    Parametros
-    ----------
-    max_height(int): altura de la ventana
-    max_width(int): ancho de la ventana
-    """
-
-    def __init__(self, max_height, max_width):
-        window = c.newwin(11, max_width - 30, max_height - 12, 1)
-
-        super().__init__(window, vertical_scrollable=False)
-
-    def input_handler(self, char):
-        # el metodo input_handler se encarga de manejar el scrolling de la ficha
-        super().input_handler(char)
-
-        # manejo del resaltado de las fichas
-        if char == 97:  # a
-            self.linter -= 1
-        elif char == 100:  # d
-            self.linter += 1
-        elif char == 10:  # ENTER
-            # cuando se presiona ENTER el jugador hace la jugada, retornando la
-            # ficha que esta resaltada
-            return self.elements[self.linter][0]
-        else:
-            pass
-
-        self.linter %= self.linterable_objects

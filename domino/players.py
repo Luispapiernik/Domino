@@ -32,7 +32,7 @@ class Player:
         """
         Este metodo elimina y retorna una ficha del jugador
 
-        Parametros
+        Parameters
         ----------
         numerator(int): valor del numerador de la ficha a eliminar
         denominator(int): valor del denominador de la ficha a eliminar
@@ -60,7 +60,7 @@ class Computer(Player):
         """
         Este metodo realiza la jugada de la maquina
 
-        Parametros
+        Parameters
         ----------
         tokens(list(Token)): lista con las fichas que han sido jugadas
         right(Token): representa la ultima ficha jugada en uno de los lados

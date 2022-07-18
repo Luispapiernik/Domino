@@ -1,4 +1,3 @@
-# libreria que se usara para manejar entrada del usuario por teclado
 from argparse import ArgumentParser
 
 from domino.manager import Manager
