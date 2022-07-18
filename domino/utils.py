@@ -1,7 +1,3 @@
-#! -*- coding: utf-8 -*-
-
-from __future__ import division
-
 # representacion grafica de las fichas
 # +-----+
 # |* * *|
@@ -26,32 +22,32 @@ HORIZONTAL = 1
 
 # necesarios para la construccion del string que representa a las fichas
 TOKENS_PARTS = [{}, {}]
-TOKENS_PARTS[VERTICAL]['head'] = '+-----+'
-TOKENS_PARTS[VERTICAL]['middle'] = '|-----|'
-TOKENS_PARTS[VERTICAL][0] = ['|     |', '|     |', '|     |']
-TOKENS_PARTS[VERTICAL][1] = ['|     |', '|  *  |', '|     |']
-TOKENS_PARTS[VERTICAL][2] = ['|*    |', '|     |', '|    *|']
-TOKENS_PARTS[VERTICAL][3] = ['|*    |', '|  *  |', '|    *|']
-TOKENS_PARTS[VERTICAL][4] = ['|*   *|', '|     |', '|*   *|']
-TOKENS_PARTS[VERTICAL][5] = ['|*   *|', '|  *  |', '|*   *|']
-TOKENS_PARTS[VERTICAL][6] = ['|*   *|', '|*   *|', '|*   *|']
-TOKENS_PARTS[VERTICAL][7] = ['|*   *|', '|* * *|', '|*   *|']
-TOKENS_PARTS[VERTICAL][8] = ['|* * *|', '|*   *|', '|* * *|']
-TOKENS_PARTS[VERTICAL][9] = ['|* * *|', '|* * *|', '|* * *|']
+TOKENS_PARTS[VERTICAL]["head"] = "+-----+"
+TOKENS_PARTS[VERTICAL]["middle"] = "|-----|"
+TOKENS_PARTS[VERTICAL][0] = ["|     |", "|     |", "|     |"]
+TOKENS_PARTS[VERTICAL][1] = ["|     |", "|  *  |", "|     |"]
+TOKENS_PARTS[VERTICAL][2] = ["|*    |", "|     |", "|    *|"]
+TOKENS_PARTS[VERTICAL][3] = ["|*    |", "|  *  |", "|    *|"]
+TOKENS_PARTS[VERTICAL][4] = ["|*   *|", "|     |", "|*   *|"]
+TOKENS_PARTS[VERTICAL][5] = ["|*   *|", "|  *  |", "|*   *|"]
+TOKENS_PARTS[VERTICAL][6] = ["|*   *|", "|*   *|", "|*   *|"]
+TOKENS_PARTS[VERTICAL][7] = ["|*   *|", "|* * *|", "|*   *|"]
+TOKENS_PARTS[VERTICAL][8] = ["|* * *|", "|*   *|", "|* * *|"]
+TOKENS_PARTS[VERTICAL][9] = ["|* * *|", "|* * *|", "|* * *|"]
 
-TOKENS_PARTS[HORIZONTAL]['head'] = '+|||+'
-TOKENS_PARTS[HORIZONTAL]['middle'] = '-|||-'
-TOKENS_PARTS[HORIZONTAL]['space'] = '-   -'
-TOKENS_PARTS[HORIZONTAL][0] = ['-   -', '-   -', '-   -']
-TOKENS_PARTS[HORIZONTAL][1] = ['-   -', '- * -', '-   -']
-TOKENS_PARTS[HORIZONTAL][2] = ['-  *-', '-   -', '-*  -']
-TOKENS_PARTS[HORIZONTAL][3] = ['-  *-', '- * -', '-*  -']
-TOKENS_PARTS[HORIZONTAL][4] = ['-* *-', '-   -', '-* *-']
-TOKENS_PARTS[HORIZONTAL][5] = ['-* *-', '- * -', '-* *-']
-TOKENS_PARTS[HORIZONTAL][6] = ['-* *-', '-* *-', '-* *-']
-TOKENS_PARTS[HORIZONTAL][7] = ['-* *-', '-***-', '-* *-']
-TOKENS_PARTS[HORIZONTAL][8] = ['-***-', '-* *-', '-***-']
-TOKENS_PARTS[HORIZONTAL][9] = ['-***-', '-***-', '-***-']
+TOKENS_PARTS[HORIZONTAL]["head"] = "+|||+"
+TOKENS_PARTS[HORIZONTAL]["middle"] = "-|||-"
+TOKENS_PARTS[HORIZONTAL]["space"] = "-   -"
+TOKENS_PARTS[HORIZONTAL][0] = ["-   -", "-   -", "-   -"]
+TOKENS_PARTS[HORIZONTAL][1] = ["-   -", "- * -", "-   -"]
+TOKENS_PARTS[HORIZONTAL][2] = ["-  *-", "-   -", "-*  -"]
+TOKENS_PARTS[HORIZONTAL][3] = ["-  *-", "- * -", "-*  -"]
+TOKENS_PARTS[HORIZONTAL][4] = ["-* *-", "-   -", "-* *-"]
+TOKENS_PARTS[HORIZONTAL][5] = ["-* *-", "- * -", "-* *-"]
+TOKENS_PARTS[HORIZONTAL][6] = ["-* *-", "-* *-", "-* *-"]
+TOKENS_PARTS[HORIZONTAL][7] = ["-* *-", "-***-", "-* *-"]
+TOKENS_PARTS[HORIZONTAL][8] = ["-***-", "-* *-", "-***-"]
+TOKENS_PARTS[HORIZONTAL][9] = ["-***-", "-***-", "-***-"]
 
 # estas constantes definen las posiibles configuraciones de cercania entre 2
 # fichas
@@ -309,6 +305,7 @@ def applyEvent(character, event):
     event(int): Entero que representa el evento que genera la tecla presionada
         puede ser COVER, PLAY, OPTIONS,...
     """
+
     def decorator(function):
         def wrapper(self, char):
             if character == char:

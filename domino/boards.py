@@ -1,12 +1,8 @@
-#! -*- coding: utf-8 -*-
-
-from __future__ import division
-
 import curses as c
 
-from utils import *
-from baseObjects import BaseContainer
-from tokens import LightToken, getFreeSide
+from domino.baseObjects import BaseContainer
+from domino.tokens import LightToken, getFreeSide
+from domino.utils import *
 
 
 class Board(BaseContainer):
@@ -21,10 +17,10 @@ class Board(BaseContainer):
     horizontalScrollable(bool): Booleano que indica si las fichas se pueden
         mover en direccion horizontal
     """
-    def __init__(self, window, verticalScrollable=True,
-                 horizontalScrollable=True):
 
-        super(Board, self).__init__(window)
+    def __init__(self, window, verticalScrollable=True, horizontalScrollable=True):
+
+        super().__init__(window)
 
         self.verticalScrollable = verticalScrollable
         self.horizontalScrollable = horizontalScrollable
@@ -53,10 +49,11 @@ class Table(Board):
     """
     Esta clase representa el panel en donde iran las fichas jugadas
     """
+
     def __init__(self, maxHeight, maxWidth):
         window = c.newwin(maxHeight - 13, maxWidth - 30, 1, 1)
 
-        super(Table, self).__init__(window)
+        super().__init__(window)
 
         # esta variable especifica si el jugador esta posicionando una ficha
         self.isLocatingToken = False
@@ -145,7 +142,7 @@ class Table(Board):
         return True
 
     def inputHandler(self, char):
-        super(Table, self).inputHandler(char)
+        super().inputHandler(char)
 
         # si se presiona ENTER el jugador ha terminado de posicionar una ficha
         if char == 10:  # ENTER
@@ -301,14 +298,15 @@ class PlayerTable(Board):
     maxHeight(int): altura de la ventana
     maxWidth(int): ancho de la ventana
     """
+
     def __init__(self, maxHeight, maxWidth):
         window = c.newwin(11, maxWidth - 30, maxHeight - 12, 1)
 
-        super(PlayerTable, self).__init__(window, verticalScrollable=False)
+        super().__init__(window, verticalScrollable=False)
 
     def inputHandler(self, char):
         # el metodo inputHandler se encarga de manejar el scrolling de la ficha
-        super(PlayerTable, self).inputHandler(char)
+        super().inputHandler(char)
 
         # manejo del resaltado de las fichas
         if char == 97:  # a

@@ -1,13 +1,11 @@
-#!-*- encoding: utf-8 -*-
-
 import curses as c
 
-from utils import *
-from pages import Cover, Options, Help, Credits
-from game import Game
+from domino.game import Game
+from domino.pages import Cover, Credits, Help, Options
+from domino.utils import *
 
 
-class Manager(object):
+class Manager:
     """
     Esta clase se encarga de manejar todo el ciclo del programa, inicializa
     todo lo necesario para el juego todo en pantalla, recibe entrada
@@ -17,6 +15,7 @@ class Manager(object):
     ----------
     args(namespace): namespace con los parametros pasados por el usuario
     """
+
     def __init__(self, args):
         # variables que mantienen la logica de la apliacion
         self.quit = False

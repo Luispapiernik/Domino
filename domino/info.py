@@ -1,31 +1,32 @@
-#! -*- coding: utf-8 -*-
-
 import curses as c
 
-from utils import *
-from baseObjects import Writable, BaseContainer
+from domino.baseObjects import BaseContainer, Writable
+from domino.utils import *
 
 
 class GameInfo(BaseContainer):
     """
     Esta clase se encarga de mostrar la informacion de cada usuario en pantalla
     """
+
     def __init__(self, maxHeight, maxWidth):
         window = c.newwin(maxHeight - 2, 28, 1, maxWidth - 29)
 
-        super(GameInfo, self).__init__(window)
+        super().__init__(window)
 
-        position = [1, getCenterColumn('PLAYER', self.height) - 2]
-        self.addElements(Writable(['PLAYER'], position), False)
+        position = [1, getCenterColumn("PLAYER", self.height) - 2]
+        self.addElements(Writable(["PLAYER"], position), False)
 
-        self.addElements(Writable(['-' * 28], [2, 1]))
+        self.addElements(Writable(["-" * 28], [2, 1]))
 
-        position = [getCenterRow(self.height),
-                    getCenterColumn('COMPUTER', self.height) - 2]
-        self.addElements(Writable(['COMPUTER'], position))
+        position = [
+            getCenterRow(self.height),
+            getCenterColumn("COMPUTER", self.height) - 2,
+        ]
+        self.addElements(Writable(["COMPUTER"], position))
 
         position = [getCenterRow(self.height) + 1, 1]
-        self.addElements(Writable(['-' * 28], position))
+        self.addElements(Writable(["-" * 28], position))
 
     def initInfo(self, playerInfo, computerInfo):
         """
