@@ -268,7 +268,7 @@ CREDITS = 5
 QUIT = 6
 
 
-def getCenterColumn(text, maxWidth):
+def get_center_column(text, max_width):
     """
     Esta funcion retorna la posicion de la columna en que se debe poner un
     texto en una ventana para que quede centrado
@@ -276,25 +276,25 @@ def getCenterColumn(text, maxWidth):
     Parametros
     ----------
     text(str): Texto que sera centrado
-    maxWidth(int): Ancho de la ventana en la que se escribira el texto
+    max_width(int): Ancho de la ventana en la que se escribira el texto
     """
-    middleTex = len(text) // 2
-    return maxWidth // 2 - middleTex
+    middle_tex = len(text) // 2
+    return max_width // 2 - middle_tex
 
 
-def getCenterRow(maxHeight):
+def get_center_row(max_height):
     """
     Esta funcion retorna la posicion de la fila en que se debe poner un
     texto en una ventana para que quede centrado
 
     Parametros
     ----------
-    maxHeight(int): Alto de la ventana en la que se escribira el texto
+    max_height(int): Alto de la ventana en la que se escribira el texto
     """
-    return (maxHeight - 2) // 2
+    return (max_height - 2) // 2
 
 
-def applyEvent(character, event):
+def apply_event(character, event):
     """
     Esta funcion es un constructor de decoradores que se usara para agregar de
     forma automatica el manejo de algunos eventos a las ventanas

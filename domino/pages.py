@@ -12,17 +12,17 @@ class PageNotImplemented(BaseContainer):
 
         super().__init__(window)
 
-        centerPositionX = getCenterRow(height)
+        center_position_x = get_center_row(height)
 
-        self.addElements(
+        self.add_elements(
             Writable(
                 ["No implementado"],
-                (centerPositionX, getCenterColumn("No implementado", width)),
+                (center_position_x, get_center_column("No implementado", width)),
             )
         )
 
-    @applyEvent(10, COVER)  # ENTER
-    def inputHandler(self, char):
+    @apply_event(10, COVER)  # ENTER
+    def input_handler(self, char):
         pass
 
 
@@ -33,48 +33,52 @@ class Cover(BaseContainer):
 
     Parametros
     ----------
-    maxHeight(int): altura de la ventana
-    maxWidth(int): ancho de la ventana
+    max_height(int): altura de la ventana
+    max_width(int): ancho de la ventana
     """
 
-    def __init__(self, maxHeight, maxWidth):
+    def __init__(self, max_height, max_width):
         # se crea la ventana en donde se dibujaran los elementos
-        window = c.newwin(maxHeight, maxWidth, 0, 0)
+        window = c.newwin(max_height, max_width, 0, 0)
 
         # se llama al inicializador del padre
         super().__init__(window)
 
         # para dibujar los elementos de forma centrada se obtiene la fila que
         # esta en el centro
-        centerPositionX = getCenterRow(maxHeight)
+        center_position_x = get_center_row(max_height)
 
         # se agregan los elementos
-        self.addElements(
-            Writable(["Jugar"], (centerPositionX, getCenterColumn("Jugar", maxWidth)))
+        self.add_elements(
+            Writable(
+                ["Jugar"], (center_position_x, get_center_column("Jugar", max_width))
+            )
         )
 
-        self.addElements(
+        self.add_elements(
             Writable(
                 ["Opciones"],
-                (centerPositionX + 1, getCenterColumn("Opciones", maxWidth)),
+                (center_position_x + 1, get_center_column("Opciones", max_width)),
             )
         )
 
-        self.addElements(
+        self.add_elements(
             Writable(
-                ["Ayuda"], (centerPositionX + 2, getCenterColumn("Ayuda", maxWidth))
+                ["Ayuda"],
+                (center_position_x + 2, get_center_column("Ayuda", max_width)),
             )
         )
 
-        self.addElements(
+        self.add_elements(
             Writable(
-                ["Credito"], (centerPositionX + 3, getCenterColumn("Credito", maxWidth))
+                ["Credito"],
+                (center_position_x + 3, get_center_column("Credito", max_width)),
             )
         )
 
-    @applyEvent(c.KEY_RESIZE, QUIT)  # cuando se cambia dimension de la ventana
-    @applyEvent(113, QUIT)  # q
-    def inputHandler(self, char):
+    @apply_event(c.KEY_RESIZE, QUIT)  # cuando se cambia dimension de la ventana
+    @apply_event(113, QUIT)  # q
+    def input_handler(self, char):
         """
         Este metodo se encarga de manejar entrada del usuario, la clase Cover
         solo gestiona el cambio de ventana
@@ -103,7 +107,7 @@ class Cover(BaseContainer):
 
         # self.linter no debe estar por fuera de [0, 3], si esta por fuera con
         # operacion modulo se vuelve a poner en el conjunto [0, 3]
-        self.linter %= self.linterableObjects
+        self.linter %= self.linterable_objects
 
 
 class Options(PageNotImplemented):

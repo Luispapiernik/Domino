@@ -23,7 +23,7 @@ use la tecla p y para salir del programa use la letra q
 """
 
 
-def validateArgs(args):
+def validate_args(args):
     """
     Esta funcion lanza un error si los parametros no tienen valores validos
     """
@@ -50,15 +50,10 @@ def main():
     )
 
     args = parser.parse_args()
+    validate_args(args)
 
-    # se validan los argumentos
-    validateArgs(args)
-
-    # se ejecuta la aplicacion
     manager = Manager(args)
-
     manager.loop()
-
     manager.end()
 
 

@@ -31,7 +31,7 @@ class Manager:
         self.credits = Credits(*self.stdscr.getmaxyx())
 
         # este atributo contiene referencia a la ventana que se muestra
-        self.currentWindow = self.cover
+        self.current_window = self.cover
 
     def init(self):
         # se inicializa curses y se obtiene una referencia a la ventana
@@ -67,7 +67,7 @@ class Manager:
 
         while not self.quit:
             # se dibuja la ventana, puede ser cover, game, options,...
-            self.currentWindow.write()
+            self.current_window.write()
 
             # se obtiene entrada del usuario
             char = self.stdscr.getch()
@@ -75,19 +75,19 @@ class Manager:
             # cada ventana debe retornar a que ventana pasara el programa en
             # el siguiente ciclo de aplicacion, si retorna NONE es que sigue
             # en la misma ventana
-            nextWindow = self.currentWindow.inputHandler(char)
+            nextWindow = self.current_window.input_handler(char)
 
             # se actualiza el valor de la ventana actual
             if nextWindow == COVER:
-                self.currentWindow = self.cover
+                self.current_window = self.cover
             elif nextWindow == PLAY:
-                self.currentWindow = self.game
+                self.current_window = self.game
             elif nextWindow == OPTIONS:
-                self.currentWindow = self.options
+                self.current_window = self.options
             elif nextWindow == HELP:
-                self.currentWindow = self.help
+                self.current_window = self.help
             elif nextWindow == CREDITS:
-                self.currentWindow = self.credits
+                self.current_window = self.credits
             elif nextWindow == QUIT:
                 self.quit = True
             else:

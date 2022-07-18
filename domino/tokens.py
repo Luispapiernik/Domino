@@ -2,7 +2,7 @@ from domino.baseObjects import Writable
 from domino.utils import *
 
 
-def areClose(token1, token2):
+def are_close(token1, token2):
     """
     Esta funcion retorna la configuracion de conexion que hay entre 2 fichas
 
@@ -22,8 +22,8 @@ def areClose(token1, token2):
     # la componente cero de position indica posicion en el eje y(filas), la
     # componente 1 indica posicion en el eje x(columnas)
 
-    verticalDiference = token1.position[0] - token2.position[0]
-    horizontalDiference = token1.position[1] - token2.position[1]
+    vertical_diference = token1.position[0] - token2.position[0]
+    horizontal_diference = token1.position[1] - token2.position[1]
 
     # configuracion de cercania 1
     # +-----+
@@ -47,12 +47,12 @@ def areClose(token1, token2):
     # si las fichas estan en la misma columna
     if token1.position[1] == token2.position[1]:
         # si ambas fichas estan orientadas de forma vertical
-        if token1.isVertical() and token2.isVertical():
+        if token1.is_vertical() and token2.is_vertical():
             # token1 esta abajo
-            if verticalDiference == 9:
+            if vertical_diference == 9:
                 return -PROXIMITYCONFIGURACION_1
             # token2 esta abajo
-            if verticalDiference == -9:
+            if vertical_diference == -9:
                 return PROXIMITYCONFIGURACION_1
 
     # configuracion de cercania 2
@@ -64,12 +64,12 @@ def areClose(token1, token2):
     # si ambas fichas estan en la misma fila
     if token1.position[0] == token2.position[0]:
         # si ambas fichas estan orientadas de forma horizontal
-        if token1.isHorizontal() and token2.isHorizontal():
+        if token1.is_horizontal() and token2.is_horizontal():
             # token1 esta a la derecha
-            if horizontalDiference == 13:
+            if horizontal_diference == 13:
                 return -PROXIMITYCONFIGURACION_2
             # token2 esta a la derecha
-            if horizontalDiference == -13:
+            if horizontal_diference == -13:
                 return PROXIMITYCONFIGURACION_2
 
     # configuracion de cercania 3
@@ -84,10 +84,10 @@ def areClose(token1, token2):
     # +-----+
     if token1.position[0] == token2.position[0]:
         # token 1 es el de la derecha
-        if horizontalDiference == 7:
+        if horizontal_diference == 7:
             return -PROXIMITYCONFIGURACION_3
         # token 2 a la derecha
-        if horizontalDiference == -7:
+        if horizontal_diference == -7:
             return PROXIMITYCONFIGURACION_3
 
     # configuracion de cercania 4
@@ -100,12 +100,12 @@ def areClose(token1, token2):
     # |* * *|+-----------+
     # |* * *|
     # +-----+
-    if abs(verticalDiference) == 2:
+    if abs(vertical_diference) == 2:
         # token1 el de la derecha
-        if horizontalDiference == 7:
+        if horizontal_diference == 7:
             return -PROXIMITYCONFIGURACION_4
         # token2 a la derecha
-        if horizontalDiference == -7:
+        if horizontal_diference == -7:
             return PROXIMITYCONFIGURACION_4
 
     # configuracion de cercania 5
@@ -118,12 +118,12 @@ def areClose(token1, token2):
     # |* * *||* * *2* * *|
     # |* * *||* * *|* * *|
     # +-----++-----------+
-    if abs(verticalDiference) == 4:
+    if abs(vertical_diference) == 4:
         # token1 a la derecha
-        if horizontalDiference == 7:
+        if horizontal_diference == 7:
             return -PROXIMITYCONFIGURACION_5
         # token2 a la derecha
-        if horizontalDiference == -7:
+        if horizontal_diference == -7:
             return PROXIMITYCONFIGURACION_5
 
     # configuracion de cercania 6
@@ -138,9 +138,9 @@ def areClose(token1, token2):
     #              +-----+
     if token1.position[0] == token2.position[0]:
         # token1 a la derecha
-        if horizontalDiference == 13:
+        if horizontal_diference == 13:
             return -PROXIMITYCONFIGURACION_6
-        if horizontalDiference == -13:
+        if horizontal_diference == -13:
             return PROXIMITYCONFIGURACION_6
 
     # configuracion de cercania 7
@@ -153,12 +153,12 @@ def areClose(token1, token2):
     # +-----------+|* * *|
     #              |* * *|
     #              +-----+
-    if abs(verticalDiference) == 2:
+    if abs(vertical_diference) == 2:
         # token1 a la derecha
-        if horizontalDiference == 13:
+        if horizontal_diference == 13:
             return -PROXIMITYCONFIGURACION_7
         # token2 a la derecha
-        if horizontalDiference == -13:
+        if horizontal_diference == -13:
             return PROXIMITYCONFIGURACION_7
 
     # configuracion de cercania 8
@@ -171,12 +171,12 @@ def areClose(token1, token2):
     # |* * *1* * *||* * *|
     # |* * *|* * *||* * *|
     # +-----------++-----+
-    if abs(verticalDiference) == 4:
+    if abs(vertical_diference) == 4:
         # token1 a la derecha
-        if horizontalDiference == 13:
+        if horizontal_diference == 13:
             return -PROXIMITYCONFIGURACION_8
         # token2 a la derecha
-        if horizontalDiference == -13:
+        if horizontal_diference == -13:
             return PROXIMITYCONFIGURACION_8
 
     # configuracion de cercania 9
@@ -196,10 +196,10 @@ def areClose(token1, token2):
     # +-----+
     if token1.position[1] == token2.position[1]:
         # token1 abajo
-        if verticalDiference == 5:
+        if vertical_diference == 5:
             return -PROXIMITYCONFIGURACION_9
         # token1 abajo
-        if verticalDiference == -5:
+        if vertical_diference == -5:
             return PROXIMITYCONFIGURACION_9
 
     # configuracion de cercania 10
@@ -217,12 +217,12 @@ def areClose(token1, token2):
     #    |* * *|
     #    |* * *|
     #    +-----+
-    if abs(horizontalDiference) == 3:
+    if abs(horizontal_diference) == 3:
         # token1 abajo
-        if verticalDiference == 5:
+        if vertical_diference == 5:
             return -PROXIMITYCONFIGURACION_10
         # token2 abajo
-        if verticalDiference == -5:
+        if vertical_diference == -5:
             return PROXIMITYCONFIGURACION_10
 
     # configuracion de cercania 11
@@ -240,12 +240,12 @@ def areClose(token1, token2):
     #       |* * *|
     #       |* * *|
     #       +-----+
-    if abs(horizontalDiference) == 6:
+    if abs(horizontal_diference) == 6:
         # token1 abajo
-        if verticalDiference == 5:
+        if vertical_diference == 5:
             return -PROXIMITYCONFIGURACION_11
         # token2 abajo
-        if verticalDiference == -5:
+        if vertical_diference == -5:
             return PROXIMITYCONFIGURACION_11
 
     # configuracion de cercania 12
@@ -265,10 +265,10 @@ def areClose(token1, token2):
     # +-----------+
     if token1.position[1] == token2.position[1]:
         # token1 abajo
-        if verticalDiference == 9:
+        if vertical_diference == 9:
             return -PROXIMITYCONFIGURACION_12
         # token2 abajo
-        if verticalDiference == -9:
+        if vertical_diference == -9:
             return PROXIMITYCONFIGURACION_12
 
     # configuracion de cercania 13
@@ -286,12 +286,12 @@ def areClose(token1, token2):
     # |* * *2* * *|
     # |* * *|* * *|
     # +-----------+
-    if abs(horizontalDiference) == 3:
+    if abs(horizontal_diference) == 3:
         # token1 abajo
-        if verticalDiference == 9:
+        if vertical_diference == 9:
             return -PROXIMITYCONFIGURACION_13
         # token2 abajo
-        if verticalDiference == -9:
+        if vertical_diference == -9:
             return PROXIMITYCONFIGURACION_13
 
     # configuracion de cercania 14
@@ -309,12 +309,12 @@ def areClose(token1, token2):
     # |* * *2* * *|
     # |* * *|* * *|
     # +-----------+
-    if abs(horizontalDiference) == 6:
+    if abs(horizontal_diference) == 6:
         # token1 abajo
-        if verticalDiference == 9:
+        if vertical_diference == 9:
             return -PROXIMITYCONFIGURACION_14
         # token2 abajo
-        if verticalDiference == -9:
+        if vertical_diference == -9:
             return PROXIMITYCONFIGURACION_14
 
     return False
@@ -337,7 +337,7 @@ def getFreeSide(token1, token2):
         NUMERATOR, DENOMINATOR o BOTH y se retorna False si no estan conectadas
     """
     # se obtiene que tipo de conexion tienen las fichas
-    are_close = areClose(token1, token2)
+    are_close = are_close(token1, token2)
 
     if are_close == PROXIMITYCONFIGURACION_1:
         return NUMERATOR
@@ -399,7 +399,7 @@ def getFreeSide(token1, token2):
         return False
 
 
-def _areCompatible(token1, token2):
+def _are_compatible(token1, token2):
     """
     Esta funcion retorna True cuando 2 fichas estan bien conectadas segun las
     regla del domino y False en caso contrario
@@ -415,7 +415,7 @@ def _areCompatible(token1, token2):
     # de los numeradores o denominadores coinciden en el punto de conexion
 
     # se obtiene el tipo de conexion que tienen las fichas
-    are_close = areClose(token1, token2)
+    are_close = are_close(token1, token2)
 
     # +-----+
     # |* * *|
@@ -703,21 +703,21 @@ class LightToken:
         self.position = pos
         self.orientation = orientation
 
-    def isVertical(self):
+    def is_vertical(self):
         """
         Este metodo retorna True si la ficha esta orientada de forma vertical,
         False en caso contrario
         """
         return self.orientation == VERTICAL
 
-    def isHorizontal(self):
+    def is_horizontal(self):
         """
         Este metodo retorna True si la ficha esta orientada de forma
         horizontal, False en caso contrario
         """
         return self.orientation == HORIZONTAL
 
-    def areConcatenable(self, token):
+    def are_concatenable(self, token):
         """
         Este metodo retorna True si dos fichas pueden ser compatibles, False
         en caso contrario
@@ -735,13 +735,13 @@ class LightToken:
         else:
             return False
 
-    def areCompatible(self, token):
+    def are_compatible(self, token):
         """
         Este metodo chequea si la ficha es compatible con alguna otra
         """
         # Dos fichas son compatibles si se pueden poner un despues de la otra
         # siquiendo las reglas del domino, es decir, estan bien conectadas
-        return _areCompatible(self, token)
+        return _are_compatible(self, token)
 
 
 class Token(LightToken, Writable):

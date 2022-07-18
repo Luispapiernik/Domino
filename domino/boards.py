@@ -12,35 +12,35 @@ class Board(BaseContainer):
     Parametros
     ----------
     window(Window): tablero en donde se dibujaran las fichas
-    verticalScrollable(bool): Booleano que indica si las fichas se pueden mover
+    vertical_scrollable(bool): Booleano que indica si las fichas se pueden mover
         en direccion vertical
-    horizontalScrollable(bool): Booleano que indica si las fichas se pueden
+    horizontal_scrollable(bool): Booleano que indica si las fichas se pueden
         mover en direccion horizontal
     """
 
-    def __init__(self, window, verticalScrollable=True, horizontalScrollable=True):
+    def __init__(self, window, vertical_scrollable=True, horizontal_scrollable=True):
 
         super().__init__(window)
 
-        self.verticalScrollable = verticalScrollable
-        self.horizontalScrollable = horizontalScrollable
+        self.vertical_scrollable = vertical_scrollable
+        self.horizontal_scrollable = horizontal_scrollable
 
-    def inputHandler(self, char):
-        # el scrolling de las fichas se maneja con la variable zeroPosition que
+    def input_handler(self, char):
+        # el scrolling de las fichas se maneja con la variable zero_position que
         # es el corrimiento que se debe agregar a su posicion en el momento de
         # dibujarlas
 
         # manejando scrolling de las fichas
-        if self.verticalScrollable:
+        if self.vertical_scrollable:
             if char == 259:  # UP
-                self.zeroPosition[0] -= 1
+                self.zero_position[0] -= 1
             if char == 258:  # DOWN
-                self.zeroPosition[0] += 1
-        if self.horizontalScrollable:
+                self.zero_position[0] += 1
+        if self.horizontal_scrollable:
             if char == 260:  # RIGHT
-                self.zeroPosition[1] -= 1
+                self.zero_position[1] -= 1
             if char == 261:  # LEFT
-                self.zeroPosition[1] += 1
+                self.zero_position[1] += 1
         if char == 114:  # r
             self.elements[self.linter][0].reflect()
 
@@ -50,13 +50,13 @@ class Table(Board):
     Esta clase representa el panel en donde iran las fichas jugadas
     """
 
-    def __init__(self, maxHeight, maxWidth):
-        window = c.newwin(maxHeight - 13, maxWidth - 30, 1, 1)
+    def __init__(self, max_height, max_width):
+        window = c.newwin(max_height - 13, max_width - 30, 1, 1)
 
         super().__init__(window)
 
         # esta variable especifica si el jugador esta posicionando una ficha
-        self.isLocatingToken = False
+        self.is_locating_token = False
         self.linter = -1
 
         # estas variables indican las ultimas fichas jugadas en los extremos
@@ -70,7 +70,7 @@ class Table(Board):
         self.right = None
         self.left = None
 
-    def getTokens(self):
+    def get_tokens(self):
         """
         Este metodo retorna todas las fichas que han sido jugadas, es decir,
         las que estan en el tablero
@@ -83,7 +83,7 @@ class Table(Board):
 
         return tokens
 
-    def isValidPosition(self):
+    def is_valid_position(self):
         """
         Este metodo chequea si el jugador ha posicionado de forma correcta una
         ficha
@@ -103,27 +103,27 @@ class Table(Board):
 
             return True
 
-        if (self.right is not None) and self.right.areCompatible(token):
-            tempToken, other = self.right, self.left
-        elif (self.left is not None) and self.left.areCompatible(token):
-            tempToken, other = self.left, self.right
+        if (self.right is not None) and self.right.are_compatible(token):
+            temporal_token, other = self.right, self.left
+        elif (self.left is not None) and self.left.are_compatible(token):
+            temporal_token, other = self.left, self.right
         else:
             return False
 
-        freeSide = getFreeSide(token, tempToken)
+        freeSide = getFreeSide(token, temporal_token)
 
-        tempToken.position = token.position[:]
-        tempToken.orientation = token.orientation
+        temporal_token.position = token.position[:]
+        temporal_token.orientation = token.orientation
 
         if token.numerator == token.denominator:
-            tempToken.numerator = token.numerator
-            tempToken.denominator = token.denominator
+            temporal_token.numerator = token.numerator
+            temporal_token.denominator = token.denominator
         elif freeSide == NUMERATOR:
-            tempToken.numerator = token.numerator
-            tempToken.denominator = -1
+            temporal_token.numerator = token.numerator
+            temporal_token.denominator = -1
         elif freeSide == DENOMINATOR:
-            tempToken.numerator = -1
-            tempToken.denominator = token.denominator
+            temporal_token.numerator = -1
+            temporal_token.denominator = token.denominator
         else:
             pass
 
@@ -141,30 +141,30 @@ class Table(Board):
 
         return True
 
-    def inputHandler(self, char):
-        super().inputHandler(char)
+    def input_handler(self, char):
+        super().input_handler(char)
 
         # si se presiona ENTER el jugador ha terminado de posicionar una ficha
         if char == 10:  # ENTER
             # en el caso que este posicionando una ficha
-            if self.isLocatingToken:
+            if self.is_locating_token:
                 # se revisa si la posicion es valida
-                if self.isValidPosition():
+                if self.is_valid_position():
                     # se ha terminado el proceso de posicionamiento
-                    self.isLocatingToken = False
+                    self.is_locating_token = False
                     # se debe cambiar de turno
                     return True
         elif char == 116:  # t
             # cuando se presiona la tecla t mientras se esta en el proceso de
             # seleccion de posicion para una ficha, esta ficha debe ser rotada
-            if self.isLocatingToken:
+            if self.is_locating_token:
                 self.elements[self.linter][0].rotate()
         else:
             pass
 
         # se maneja el movimiento de las fichas mientras se esta seleccionando
         # posicion para una ficha
-        if self.isLocatingToken:
+        if self.is_locating_token:
             # para mover las fichas que estan ya posicionadas en el tablero
             if char == 259:  # UP
                 self.elements[self.linter][0].position[0] += 1
@@ -189,62 +189,62 @@ class Table(Board):
         # no se cambia de turno
         return False
 
-    def locateToken(self, token):
+    def locate_token(self, token):
         """
         Este metodo inicia el proceso de posicionamiento de una ficha del
         jugador en pantalla
         """
         # se posiciona la ficha en la mitad de la pantalla
-        token.position[0] = self.height // 2 - 7 - self.zeroPosition[0]
-        token.position[1] = self.width // 2 - 13 - self.zeroPosition[1]
+        token.position[0] = self.height // 2 - 7 - self.zero_position[0]
+        token.position[1] = self.width // 2 - 13 - self.zero_position[1]
 
         # se agrega la ficha a los elementos propios
-        self.addElements(token, False)
+        self.add_elements(token, False)
 
         # ahora el jugador tiene que posicionar la ficha en el lugar correcto
-        self.isLocatingToken = True
+        self.is_locating_token = True
         # se acaba de agregar un elemento mas, por tanto este numero debe
         # aumentar en uno
         self.linter += 1
 
-    def locateComputerToken(self, token):
+    def locate_computer_token(self, token):
         """
         Este metodo posiciona la ficha del computador en el tablero
         """
         # se agrega la ficha a los elementos propios
-        self.addElements(token, False)
+        self.add_elements(token, False)
         # se acaba de agregar un elemento mas, por tanto este numero debe
         # aumentar en uno
         self.linter += 1
 
         # se revisa a que extremo se deberia agregar la ficha
-        if token.areConcatenable(self.right):
-            tempToken = self.right
+        if token.are_concatenable(self.right):
+            temporal_token = self.right
         else:
-            tempToken = self.left
+            temporal_token = self.left
 
         # se asigna la misma posicion a los tokens
-        token.position = tempToken.position[:]
+        token.position = temporal_token.position[:]
 
         # se orientan las fichas en la misma direccion
-        if token.orientation != tempToken.orientation:
+        if token.orientation != temporal_token.orientation:
             token.rotate()
 
         # lo siguiente no se documenta porque debe ser implementado de forma
         # mas clara
-        if token.numerator == tempToken.numerator:
+        if token.numerator == temporal_token.numerator:
             token.reflect()
 
             if token.orientation == VERTICAL:
                 token.position[0] -= 9
             else:
                 token.position[1] -= 13
-        elif token.denominator == tempToken.numerator:
+        elif token.denominator == temporal_token.numerator:
             if token.orientation == VERTICAL:
                 token.position[0] -= 9
             else:
                 token.position[1] -= 13
-        elif token.numerator == tempToken.denominator:
+        elif token.numerator == temporal_token.denominator:
             if token.orientation == VERTICAL:
                 token.position[0] += 9
             else:
@@ -257,35 +257,35 @@ class Table(Board):
             else:
                 token.position[1] += 13
 
-    def isValidToken(self, lightToken):
+    def is_valid_token(self, light_token):
         """
         Este metodo retorna True si un token puede ser posicionado en pantalla
 
-        lightToken(LightToken| Token): token que sera posicionado
+        light_token(LightToken| Token): token que sera posicionado
         """
         # un token es valido si se puede conectar a cualquiera de las 2 ramas
         # del domino
 
         # somos no optimistas y de entrada suponemos que el token no se puede
         # conectar
-        isValid = False
+        is_valid = False
 
         # si no hay fichas en el tablero, entones cualquier token puede ser
         # posicionado en pantalla
         if self.right is None and self.left is None:
-            isValid = True
+            is_valid = True
 
         # cuando self.right tiene un valor se debe chequear si es concatenable
         # con la ficha pasada
         if self.right is not None:
-            isValid = isValid or self.right.areConcatenable(lightToken)
+            is_valid = is_valid or self.right.are_concatenable(light_token)
 
         # en el caso de que la ficha no sea concatenable con self.right, se
         # debe chequear con self.left
         if self.left is not None:
-            isValid = isValid or self.left.areConcatenable(lightToken)
+            is_valid = is_valid or self.left.are_concatenable(light_token)
 
-        return isValid
+        return is_valid
 
 
 class PlayerTable(Board):
@@ -295,18 +295,18 @@ class PlayerTable(Board):
 
     Parametros
     ----------
-    maxHeight(int): altura de la ventana
-    maxWidth(int): ancho de la ventana
+    max_height(int): altura de la ventana
+    max_width(int): ancho de la ventana
     """
 
-    def __init__(self, maxHeight, maxWidth):
-        window = c.newwin(11, maxWidth - 30, maxHeight - 12, 1)
+    def __init__(self, max_height, max_width):
+        window = c.newwin(11, max_width - 30, max_height - 12, 1)
 
-        super().__init__(window, verticalScrollable=False)
+        super().__init__(window, vertical_scrollable=False)
 
-    def inputHandler(self, char):
-        # el metodo inputHandler se encarga de manejar el scrolling de la ficha
-        super().inputHandler(char)
+    def input_handler(self, char):
+        # el metodo input_handler se encarga de manejar el scrolling de la ficha
+        super().input_handler(char)
 
         # manejo del resaltado de las fichas
         if char == 97:  # a
@@ -320,4 +320,4 @@ class PlayerTable(Board):
         else:
             pass
 
-        self.linter %= self.linterableObjects
+        self.linter %= self.linterable_objects
