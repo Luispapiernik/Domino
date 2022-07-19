@@ -14,18 +14,18 @@ from domino.utils import apply_event
 
 class Game(BaseContainer):
     """
-    Esta se encarga de manejar todo el ciclo del juego.
+    This class manages all game cycle and resources.
 
-    Parametros
+    Parameters
     ----------
     height: int
-        Entero que representa la altura de la pantalla.
+        This represents the window height.
     width: int
-        Entero que representa el ancho de la pantalla.
+        This represents the window width.
     tokens_per_player: int
-        Entero que indica cuantas fichas le corresponden a cada jugador.
+        This specify the number of tokens per player.
     max_number: int
-        Entero que indica el numero maximo que ira en las fichas del domino.
+        This indicates the max number showed in a token.
     """
 
     def __init__(
@@ -76,14 +76,13 @@ class Game(BaseContainer):
 
     def get_first(self) -> Players:
         """
-        Este metodo decide que jugador va primero
+        This method returns the player with the first turn.
         """
         return choice([Players.PLAYER, Players.COMPUTER])
 
     def get_player_tokens(self, token_number: int) -> List[Token]:
         """
-        Este metodo elimina y retorna un numero de fichas del total de fichas
-        del juego
+        This method returns a given number of token from all the possible tokens.
         """
         tokens: List[Token] = []
 
@@ -177,19 +176,15 @@ class Game(BaseContainer):
 
     def write(self) -> None:
         """
-        Este metodo dibuja todo en pantalla
+        This method draws all on screen.
         """
-        # esta variable especifica si el color del borde del panel que sera
-        # resaltado
+        # color of the panel to be hightlighted
         color_linter = None
         for i in range(len(self.elements)):
             element, _ = self.elements[i]
 
-            # si el i coincide con self.linter, entonces se debe resaltar el
-            # panel
             if i == self.linter:
                 color_linter = 2
 
             element.write(color_linter)
-
             color_linter = None

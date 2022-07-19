@@ -9,10 +9,10 @@ class BaseContainer:
     """
     This class represent a panel, that is, a container for writable objects.
 
-    Parametros
+    Parameters
     ----------
     window: curses.window
-        Windows where the container's elements will be drawed.
+        Window where the container's elements will be drawed.
     """
 
     def __init__(self, window: curses.window) -> None:
@@ -23,7 +23,7 @@ class BaseContainer:
         self.zero_position = [0, 0]
 
         # In every item, the second component indicates if the writable element
-        # must be highlighted or not.
+        # is highlightable or not.
         self.elements: List[Tuple[Writable, bool]] = []
 
         # index of the element to highligh
@@ -33,7 +33,7 @@ class BaseContainer:
 
     def add_elements(self, element: Writable, linterable: bool = True) -> None:
         """
-        This element add one element to the container.
+        This element add one writable element to the container.
 
         Parameters
         ----------
@@ -59,23 +59,24 @@ class BaseContainer:
         Parameters
         ----------
         border_color: Optional[int]
-            Color to apply to the drawed border of the container.
+            Color to apply to the border of the container.
         """
-        # First the all drawed string must be erased.
+        # First all the drawed string must be erased.
         self.window.erase()
 
-        # In order to apply a color to the border of the panel.
+        # In order to apply a color to the border of the panel the color must be
+        # activated.
         if border_color is not None:
             self.window.attron(curses.color_pair(border_color))
 
         # The border of the container is painted.
         self.window.box()
 
-        # Deactivated the color if was activated before.
+        # Deactivate the color if was activated before.
         if border_color is not None:
             self.window.attroff(curses.color_pair(border_color))
 
-        # Contains the color for the highlightable element.
+        # This variable contains the color for the highlightable element if any.
         color_linter = None
         for i in range(len(self.elements)):
             element, linterable = self.elements[i]

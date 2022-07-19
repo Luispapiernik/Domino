@@ -6,16 +6,16 @@ from domino.schemas import Key
 
 class Board(BaseContainer):
     """
-    Esta clase representa un panel en donde se pueden ubicar fichas
+    This class represents a container where a token can be placed.
 
-    Parametros
+    Parameters
     ----------
     window: curses.window
-        Tablero en donde se dibujaran las fichas.
+        Window where the tokens will be drawed.
     vertical_scrollable: bool
-        Booleano que indica si las fichas se pueden mover en direccion vertical.
+        This indicated if the window can be vertical scrollable.
     horizontal_scrollable: bool
-        Booleano que indica si las fichas se pueden mover en direccion horizontal.
+        This indicated if the window can be horizontal scrollable.
     """
 
     def __init__(
@@ -24,18 +24,14 @@ class Board(BaseContainer):
         vertical_scrollable: bool = True,
         horizontal_scrollable: bool = True,
     ) -> None:
-
         super().__init__(window)
 
         self.vertical_scrollable = vertical_scrollable
         self.horizontal_scrollable = horizontal_scrollable
 
     def input_handler(self, char: Key) -> None:
-        # el scrolling de las fichas se maneja con la variable zero_position que
-        # es el corrimiento que se debe agregar a su posicion en el momento de
-        # dibujarlas
-
-        # manejando scrolling de las fichas
+        # The scrolling works by changing the offset that will be applied to the
+        # positions of the tokens when drawed.
         if self.vertical_scrollable:
             if char == 259:  # UP
                 self.zero_position[0] -= 1

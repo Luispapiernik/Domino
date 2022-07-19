@@ -8,7 +8,7 @@ from domino.writable import Writable
 
 class PageNotImplemented(BaseContainer):
     """
-    Esta clase reprensenta alguna ventana que no ha sido implementada
+    This class represent some window that is not implemented.
     """
 
     def __init__(self, height: int, width: int) -> None:
@@ -20,34 +20,32 @@ class PageNotImplemented(BaseContainer):
 
         self.add_elements(
             Writable(
-                "No implementado",
-                (center_position_x, get_center_column("No implementado", width)),
+                "Not implemented",
+                (center_position_x, get_center_column("Not implemented", width)),
             )
         )
 
-    @apply_event(10, Events.COVER)  # ENTER
+    # When the ENTER key is pressed.
+    @apply_event(10, Events.COVER)
     def input_handler(self, _: Key) -> Events:
         pass
 
 
 class Cover(BaseContainer):
     """
-    Esta clase reprensenta la primera ventana del aplicacion, en ella estan las
-    diferentes opciones que puede elejir un jugador: Jugar, Opciones,...
+    This class represent the first application window, in this the differents
+    options (Play, Options, Help, ...) are displayed.
 
-    Parametros
+    Parameters
     ----------
     max_height: int
-        Altura de la ventana.
+        Window height.
     max_width: int
-        Ancho de la ventana.
+        Window width.
     """
 
     def __init__(self, max_height: int, max_width: int) -> None:
-        # se crea la ventana en donde se dibujaran los elementos
         window = curses.newwin(max_height, max_width, 0, 0)
-
-        # se llama al inicializador del padre
         super().__init__(window)
 
         # para dibujar los elementos de forma centrada se obtiene la fila que
@@ -81,15 +79,11 @@ class Cover(BaseContainer):
             )
         )
 
-    @apply_event(
-        curses.KEY_RESIZE, Events.QUIT
-    )  # cuando se cambia dimension de la ventana
-    @apply_event(113, Events.QUIT)  # q
+    # When the dimension of the window is changed.
+    @apply_event(curses.KEY_RESIZE, Events.QUIT)
+    # When the key Q is pressed.
+    @apply_event(113, Events.QUIT)
     def input_handler(self, char: Key) -> Events:
-        """
-        Este metodo se encarga de manejar entrada del usuario, la clase Cover
-        solo gestiona el cambio de ventana
-        """
         # self.linter esta apuntando al elmento que es resaltado, si se aumenta
         # o disminuye este valor en uno el objeto resaltado cambia, si se
         # preciona la tecla enter en uno de los elementos se pasa a la ventana

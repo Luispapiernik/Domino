@@ -18,8 +18,8 @@ class GameInfo(BaseContainer):
     """
 
     def __init__(self, max_height: int, max_width: int) -> None:
+        # TODO: parametrize the dimensions of the window
         window = curses.newwin(max_height - 2, 28, 1, max_width - 29)
-
         super().__init__(window)
 
         position = [1, get_center_column("PLAYER", self.height) - 2]
@@ -38,6 +38,13 @@ class GameInfo(BaseContainer):
     def init_info(self, player_info: List[str], computer_info: List[str]) -> None:
         """
         This method initialize the information of every player.
+
+        Parameters
+        ----------
+        player_info: List[str]
+            Information asociated with the user.
+        computer_info: List[str]
+            Information asociated with the computer.
         """
         for i in range(len(player_info)):
             position = [4 + i, 1]
@@ -49,12 +56,18 @@ class GameInfo(BaseContainer):
 
     def update_info(self, info: List[str], player: Players = Players.PLAYER) -> None:
         """
-        This method update the information of every player.
-        """
-        if player == Players.PLAYER:
-            for i in range(len(info)):
-                self.elements[i + 4][0].text = [info[i]]
+        This method update the information of every player in the game.
 
+        Parameters
+        ----------
+        info: List[str]
+            New information associated with a given user.
+        player: Players.PLAYER
+            Player which information will be updated.
+        """
+        offset = 4
         if player == Players.COMPUTER:
-            for i in range(len(info)):
-                self.elements[i + 7][0].text = [info[i]]
+            offset == 7
+
+        for i in range(len(info)):
+            self.elements[i + offset][0].text = [info[i]]

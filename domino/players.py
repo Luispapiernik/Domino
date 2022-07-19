@@ -6,12 +6,12 @@ from domino.tokens import Token
 
 class Player:
     """
-    Esta clase representa a un jugador.
+    This class represent a player.
 
-    Parametros
+    Parameters
     ----------
     tokens: List[Token]
-        Lista con las fichas del jugador.
+        Token list of the player.
     """
 
     def __init__(self, tokens: List[Token]) -> None:
@@ -22,7 +22,7 @@ class Player:
 
     def get_info(self) -> List[str]:
         """
-        Este metodo retorna toda la informacion asociada con un jugador.
+        This method returns all the information associated with the user.
         """
         information = [
             "Tokens: %d" % len(self.tokens),
@@ -34,14 +34,14 @@ class Player:
 
     def get_token(self, numerator: int, denominator: int) -> Token:
         """
-        Este metodo elimina y retorna una ficha del jugador.
+        This method removes and returns a player token.
 
         Parameters
         ----------
         numerator: int
-            Valor del numerador de la ficha a eliminar.
+            Numerator of the token to remove.
         denominator: int
-            Valor del denominador de la ficha a eliminar.
+            Denominator of the token to remove.
         """
         for token in self.tokens:
             if token.numerator == numerator and token.denominator == denominator:
@@ -51,36 +51,34 @@ class Player:
 
 class Human(Player):
     """
-    Esta clase representa a un jugador humano.
+    This class represents a human player.
     """
 
-    pass
+    ...
 
 
 class Computer(Player):
     """
-    Esta clase representa a la maquina.
+    This class represents the computer.
     """
 
     def make_move(
         self, tokens: List[Token], right: Token, left: Token
     ) -> Optional[Token]:
         """
-        Este metodo realiza la jugada de la maquina.
+        This method play a computer turn.
 
         Parameters
         ----------
         tokens: List[Token]
-            Lista con las fichas que han sido jugadas.
-        right: Token
-            Representa la ultima ficha jugada en uno de los lados del domino.
-        left: Token
-            Representa la ultima ficha jugada en el lado restante del domino.
+            List of tokens played during all the game.
+        right, left: Token
+            References to the lasts token played to both sides of the game.
 
         Returns
         -------
         out: Optional[Token]
-            Retorna una ficha a jugar, retorna None si no ha jugadas posibles
+            Token to be played, None in case of non possible options.
         """
         # si no hay fichas en el tablero, se elijira una al azar entre las
         # fichas propias
@@ -105,5 +103,4 @@ class Computer(Player):
 
         # se escoge una ficha al azar entre todas las posibles jugadas
         token = choice(posible_tokens)
-
         return token

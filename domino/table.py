@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 
 from domino.board import Board
 from domino.schemas import Key, TokenOrientations, TokenParts
-from domino.tokens import LightToken, Token, getFreeSide
+from domino.tokens import LightToken, Token, get_free_side
 
 
 class Table(Board):
@@ -72,7 +72,7 @@ class Table(Board):
         else:
             return False
 
-        freeSide = getFreeSide(token, temporal_token)
+        freeSide = get_free_side(token, temporal_token)
 
         temporal_token.position = token.position[:]
         temporal_token.orientation = token.orientation
@@ -90,7 +90,7 @@ class Table(Board):
             pass
 
         if len(self.elements) == 2:
-            freeSide = getFreeSide(other, token)
+            freeSide = get_free_side(other, token)
 
             if other.numerator == other.denominator:
                 pass

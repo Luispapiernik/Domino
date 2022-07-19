@@ -10,12 +10,14 @@ class Writable:
 
     Parameters
     ----------
-    text: str
-        Contains the string that will be drawed.
+    text: str, List[str]
+        Contains the string that will be drawed. For multiline text a list of strings
+        must be provided.
     position: Position
         Position of the text on the screen.
     """
 
+    # TODO: Add a parameter for color.
     def __init__(self, text: Union[str, List[str]], position: Position) -> None:
         # multiline text correspond to a list of strings
         self.text = [text] if isinstance(text, str) else text
@@ -49,7 +51,7 @@ class Writable:
                 column = self.position[1] + x + offset[1]
                 row = self.position[0] + y + offset[0]
 
-                # Only what is inside the window get drawed.
+                # Only what is inside the window gets drawed.
                 if 0 < row < height - 1 and 0 < column < width - 1:
                     window.addch(row, column, self.text[y][x])
 

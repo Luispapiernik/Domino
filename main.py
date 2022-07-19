@@ -51,9 +51,14 @@ def main():
     args = parser.parse_args()
     validate_args(args)
 
-    manager = Manager(args)
-    manager.loop()
-    manager.end()
+    try:
+        manager = Manager(args)
+        manager.loop()
+        manager.end()
+    except Exception as e:
+        manager.end()
+
+        print(e)
 
 
 if __name__ == "__main__":

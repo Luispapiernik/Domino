@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Union
 
 from domino.schemas import ProximitiesConfigurations, TokenOrientations, TokenParts
 from domino.writable import Writable
@@ -52,28 +52,22 @@ TOKENS_PARTS[TokenOrientations.HORIZONTAL][9] = ["-***-", "-***-", "-***-"]
 
 def are_close(
     token1: Union["LightToken", "Token"], token2: Union["LightToken", "Token"]
-) -> bool:
+) -> Union[int, bool]:
     """
-    Esta funcion retorna la configuracion de conexion que hay entre 2 fichas.
+    This functions returns the connection configurations between two tokens.
 
-    Parametros
+    Parameters
     ----------
-    token1: Union[LightToken, Token]
-        Ficha uno.
-    token2: Union[LightToken, Token]
-        Ficha dos.
+    token1, token2: Union[LightToken, Token]
 
     Returns
     -------
-    int | False: entero entre 1 y 14 que representa que tipo de conexion tienen
-        las fichas, se retorna False si no estan conectadas
+    out: Union[int, bool]
+        Integer in the range [1, 14] that represents what kind of connection the
+        two tokens has. False is returned if the tokens are not connected.
     """
-
-    # para detectar que 2 fichas estan conectadas de forma validad, se hace uso
-    # de la separacion entre sus esquinas superior izquierda.
-    # la componente cero de position indica posicion en el eje y(filas), la
-    # componente 1 indica posicion en el eje x(columnas)
-
+    # The verification for the conections of tokens are maded using the positions
+    # of the top-left corner of the tokens.
     vertical_diference = token1.position[0] - token2.position[0]
     horizontal_diference = token1.position[1] - token2.position[1]
 
@@ -372,24 +366,26 @@ def are_close(
     return False
 
 
-def getFreeSide(
+def get_free_side(
     token1: Union["LightToken", "Token"], token2: Union["LightToken", "Token"]
 ) -> Union[int, bool]:
     """
-    Esta funcion retorna que lado queda libre una vez se han conectado 2 fichas.
+    This function returns what side is of a token is free once it has been
+    connected two other token.
 
-    Parametros
+    Parameters
     ----------
     token1: Union[LightToken, Token]
-        Ficha uno, el lado libre que se retorna corresponde a esta ficha.
+        The free side that is return correspond to this token.
     token2: Union[LightToken, Token]
-        Ficha 2, es la ficha que se conecta a la ficha uno.
+        This is the token that is connected to the token1
 
     Return
     ------
-    outs: Union[int, False]
-        Entero que representa que lado quedo libre, puede ser TokenParts.NUMERATOR,
-        TokenParts.DENOMINATOR o TokenParts.BOTH y se retorna False si no estan conectadas
+    out: Union[int, False]
+        Integer that represents what side of a token is free, it could be
+        TokenParts.NUMERATOR, TokenParts.DENOMINATOR or TokenParts.BOTH. False
+        is returned if the tokens are not connected.
     """
     # se obtiene que tipo de conexion tienen las fichas
     are_close = are_close(token1, token2)
@@ -458,21 +454,17 @@ def _are_compatible(
     token1: Union["LightToken", "Token"], token2: Union["LightToken", "Token"]
 ) -> bool:
     """
-    Esta funcion retorna True cuando 2 fichas estan bien conectadas segun las
-    regla del domino y False en caso contrario.
+    This function returns if two tokens are well connected according to the
+    dominos rules and returns False otherwise.
 
-    Parametros
+    Parameters
     ----------
-    token1: Union[LightToken, Token]
-        Ficha uno.
-    token2: Union[LightToken, Token]
-        Ficha dos.
+    token1, token2: Union[LightToken, Token]
     """
+    # Two tokens are well connected if are connected and the values of the
+    # numerators or denominators are the same in the connection point.
 
-    # 2 fichas estan bien conectadas si ademas de estar conectadas, los valores
-    # de los numeradores o denominadores coinciden en el punto de conexion
-
-    # se obtiene el tipo de conexion que tienen las fichas
+    # The type of connection is getted.
     are_close = are_close(token1, token2)
 
     # +-----+
@@ -739,19 +731,19 @@ def _are_compatible(
 
 class LightToken:
     """
-    Esta clase representa una ficha de domino
+    This class represents a token.
 
-    Parametros
+    Parameters
     ----------
     numerator: int
-        Entero que representa la parte superior o derecha de la fichas.
-        denominator(int): Entero que representa la parte inferior o izquierda de la fichas
+        Integer that represents tha superior or right part of the token.
+    denominator: int
+        Integer that represents tha inferior or left part of the token.
     pos: Tuple[int, int]
-        Dupla de enteros que representa la posicion de la ficha, primera
-        componente es posicion en fila y segunda componente es posicion en columna
+        Position of the token.
     orientation: int
-        Entero que representa la orientacion de la ficha, puede ser
-        TokenOrientations.HORIZONTAL o TokenOrientations.VERTICAL
+        This represents the orientation of the token, it can be
+        TokenOrientations.HORIZONTAL or TokenOrientations.VERTICAL
     """
 
     def __init__(
@@ -769,15 +761,13 @@ class LightToken:
 
     def is_vertical(self) -> bool:
         """
-        Este metodo retorna True si la ficha esta orientada de forma vertical,
-        False en caso contrario
+        This method check if a token is vertically oriented.
         """
         return self.orientation == TokenOrientations.VERTICAL
 
     def is_horizontal(self) -> bool:
         """
-        Este metodo retorna True si la ficha esta orientada de forma
-        horizontal, False en caso contrario
+        This method check if a token is horizontally oriented.
         """
         return self.orientation == TokenOrientations.HORIZONTAL
 
@@ -810,20 +800,19 @@ class LightToken:
 
 class Token(LightToken, Writable):
     """
-    Esta clase representa una ficha de domino que puede ser mostrada en
-    pantalla
+    This class represents a token that can be show on screen.
 
-    Parametros
+    Parameters
     ----------
-    numerator(int): Entero que representa la parte superior o derecha de la
-        fichas
-    denominator(int): Entero que representa la parte inferior o izquierda de la
-        fichas
-    pos((int, int)): Dupla de enteros que representa la posicion de la ficha,
-        primera componente es posicion en fila y segunda componente es posicion
-        en columna
-    orientation(int): Entero que representa la orientacion de la ficha, puede
-        ser TokenOrientations.HORIZONTAL o TokenOrientations.VERTICAL
+    numerator: int
+        Integer that represents tha superior or right part of the token.
+    denominator: int
+        Integer that represents tha inferior or left part of the token.
+    pos: Tuple[int, int]
+        Position of the token.
+    orientation: int
+        This represents the orientation of the token, it can be
+        TokenOrientations.HORIZONTAL or TokenOrientations.VERTICAL
     """
 
     def __init__(self, *args, **kwargs) -> None:
@@ -837,7 +826,7 @@ class Token(LightToken, Writable):
 
     def getString(self) -> List[str]:
         """
-        Este metodo obtiene la representacion en string de la ficha
+        This method returns the string representation of the token.
         """
         string: List[str] = []
 
@@ -873,14 +862,14 @@ class Token(LightToken, Writable):
 
     def reflect(self) -> None:
         """
-        Este metodo invierte la ficha.
+        This method make a reflection of the token.
         """
         self.numerator, self.denominator = self.denominator, self.numerator
         self.text = self.getString()
 
     def rotate(self) -> None:
         """
-        Este metodo cambia la orientacion de la ficha.
+        This method rotate the token 90 degrees.
         """
         if self.orientation == TokenOrientations.VERTICAL:
             self.orientation = TokenOrientations.HORIZONTAL

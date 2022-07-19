@@ -9,52 +9,48 @@ from domino.schemas import Events
 
 class Manager:
     """
-    Esta clase se encarga de manejar todo el ciclo del programa, inicializa
-    todo lo necesario para el juego todo en pantalla, recibe entrada
-    del usuario, gestiona cambio de ventanas,...
+    This class manage all the program cycle, initialize all the necessary
+    resources for the game, gets user input, manage the window changes, ...
 
-    Parametros
+    Parameters
     ----------
     args: argparse.Namespace
-        Namespace con los parametros pasados por el usuario.
+        Namespace with the user parameters.
     """
 
     def __init__(self, _: Namespace) -> None:
-        # variables que mantienen la logica de la apliacion
         self.quit = False
 
-        # se realiza inicializacion de todo lo relacionado con curses
+        # Initialize the ncurses library
         self.init()
 
-        # se inicializan las posibles ventanas del juego
+        # Initialize all program windows
         self.cover = Cover(*self.stdscr.getmaxyx())
         self.game = Game(*self.stdscr.getmaxyx())
         self.options = Options(*self.stdscr.getmaxyx())
         self.help = Help(*self.stdscr.getmaxyx())
         self.credits = Credits(*self.stdscr.getmaxyx())
 
-        # este atributo contiene referencia a la ventana que se muestra
         self.current_window = self.cover
 
     def init(self) -> None:
-        # se inicializa curses y se obtiene una referencia a la ventana
-        # principal
+        # Get reference to the main window.
         self.stdscr = curses.initscr()
 
-        # para manejar colores
+        # In order to get color controls.
         curses.start_color()
 
-        # para recibir codigo ascii de las teclas
+        # In order to get the ASCII code of every key input.
         self.stdscr.keypad(True)
-        # para controlar que se imprimira en pantalla
+        # To get more control in what is printed on screen.
         curses.noecho()
-        # para leer del teclado sin presionar la tecla enter
+        # This allows to read input keys without waiting for a key being pressed.
         curses.cbreak()
 
-        # para no mostrar el cursor en pantalla
+        # This ocults the cursor on screen
         curses.curs_set(0)
 
-        # inicializacion de colores
+        # Set main colors.
         curses.init_pair(
             settings.color_selected_element, curses.COLOR_RED, curses.COLOR_BLACK
         )
@@ -63,28 +59,26 @@ class Manager:
         )
 
     def loop(self) -> None:
-        # se borra la pantalla
+        # Clean the screen
         self.stdscr.erase()
 
-        # se dibuja un borde en la ventana
+        # Draw a box around the screen.
         self.stdscr.box()
 
-        # se cargan los cambios
+        # Load changes to screen.
         self.stdscr.refresh()
 
         while not self.quit:
-            # se dibuja la ventana, puede ser cover, game, options,...
+            # Draw the current window.
             self.current_window.write()
 
-            # se obtiene entrada del usuario
+            # Get user input.
             char = self.stdscr.getch()
 
-            # cada ventana debe retornar a que ventana pasara el programa en
-            # el siguiente ciclo de aplicacion, si retorna NONE es que sigue
-            # en la misma ventana
+            # Every window must returns what is the next window to be show, in
+            # case that Events.NONE is returned, there is not transition of window
             nextWindow = self.current_window.input_handler(char)
 
-            # se actualiza el valor de la ventana actual
             if nextWindow == Events.COVER:
                 self.current_window = self.cover
             elif nextWindow == Events.PLAY:
