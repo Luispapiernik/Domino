@@ -1,41 +1,47 @@
 from random import choice
+from typing import List, Optional
+
+from domino.tokens import Token
 
 
 class Player:
     """
-    Esta clase representa a un jugador
+    This class represent a player.
 
-    Parametros
+    Parameters
     ----------
-    tokens(list(Token)): lista con las fichas del jugador
+    tokens: List[Token]
+        Token list of the player.
     """
 
-    def __init__(self, tokens):
+    def __init__(self, tokens: List[Token]) -> None:
         self.tokens = tokens
 
-        self.skippedTurns = 0
-        self.stolenTokens = 0
+        self.skipped_turns = 0
+        self.stolen_tokens = 0
 
-    def getInfo(self):
+    def get_info(self) -> List[str]:
         """
-        Este metodo retorna toda la informacion asociada con un jugador
+        This method returns all the information associated with the user.
         """
         information = [
             "Tokens: %d" % len(self.tokens),
-            "Stolen Tokens: %d" % self.stolenTokens,
-            "Skipped Turns: %d" % self.skippedTurns,
+            "Stolen Tokens: %d" % self.stolen_tokens,
+            "Skipped Turns: %d" % self.skipped_turns,
         ]
 
         return information
 
-    def getToken(self, numerator, denominator):
+    def get_token(self, numerator: int, denominator: int) -> Token:
         """
-        Este metodo elimina y retorna una ficha del jugador
+        This method removes and returns a player token.
 
-        Parametros
+        Parameters
         ----------
-        numerator(int): valor del numerador de la ficha a eliminar
-        denominator(int): valor del denominador de la ficha a eliminar
+        numerator: int
+            Numerator of the token to remove.
+        denominator: int
+            Denominator of the token to remove.
         """
         for token in self.tokens:
             if token.numerator == numerator and token.denominator == denominator:
@@ -45,33 +51,34 @@ class Player:
 
 class Human(Player):
     """
-    Esta clase representa a un jugador humano
+    This class represents a human player.
     """
 
-    pass
+    ...
 
 
 class Computer(Player):
     """
-    Esta clase representa a la maquina
+    This class represents the computer.
     """
 
-    def makeMove(self, tokens, right, left):
+    def make_move(
+        self, tokens: List[Token], right: Token, left: Token
+    ) -> Optional[Token]:
         """
-        Este metodo realiza la jugada de la maquina
+        This method play a computer turn.
 
-        Parametros
+        Parameters
         ----------
-        tokens(list(Token)): lista con las fichas que han sido jugadas
-        right(Token): representa la ultima ficha jugada en uno de los lados
-            del domino
-        left(Token): representa la ultima ficha jugada en el lado restante del
-            domino
+        tokens: List[Token]
+            List of tokens played during all the game.
+        right, left: Token
+            References to the lasts token played to both sides of the game.
 
         Returns
         -------
-        Token | None: retorna una ficha a jugar, retorna None si no ha jugadas
-            posibles
+        out: Optional[Token]
+            Token to be played, None in case of non possible options.
         """
         # si no hay fichas en el tablero, se elijira una al azar entre las
         # fichas propias
@@ -81,20 +88,19 @@ class Computer(Player):
 
         # si hay fichas en el tablero, se debe verificar si se pueden hacer
         # alguna jugada
-        posibleTokens = []
+        posible_tokens = []
 
         # se itera sobre las fichas propias
         for token in self.tokens:
-            if token.areConcatenable(right) or token.areConcatenable(left):
-                posibleTokens.append(token)
+            if token.are_concatenable(right) or token.are_concatenable(left):
+                posible_tokens.append(token)
 
         # si no hay jugadas disponibles
-        if len(posibleTokens) == 0:
-            self.skippedTurns += 1
+        if len(posible_tokens) == 0:
+            self.skipped_turns += 1
 
             return None
 
         # se escoge una ficha al azar entre todas las posibles jugadas
-        token = choice(posibleTokens)
-
+        token = choice(posible_tokens)
         return token

@@ -1,29 +1,75 @@
-from domino.baseObjects import Writable
-from domino.utils import *
+from typing import Dict, List, Union
+
+from domino.schemas import ProximitiesConfigurations, TokenOrientations, TokenParts
+from domino.writable import Writable
+
+# graphic representation of the tokens
+# +-----+
+# |* * *|
+# |* * *|
+# |* * *|
+# |-----|
+# |* * *|
+# |* * *|
+# |* * *|
+# +-----+
+
+# +-----------+
+# |* * *|* * *|
+# |* * *|* * *|
+# |* * *|* * *|
+# +-----------+
+
+# necesarios para la construccion del string que representa a las fichas
+TOKENS_PARTS: List[Dict[Union[str, int], Union[str, List[str]]]] = [{}, {}]
+TOKENS_PARTS[TokenOrientations.VERTICAL]["head"] = "+-----+"
+TOKENS_PARTS[TokenOrientations.VERTICAL]["middle"] = "|-----|"
+TOKENS_PARTS[TokenOrientations.VERTICAL][0] = ["|     |", "|     |", "|     |"]
+TOKENS_PARTS[TokenOrientations.VERTICAL][1] = ["|     |", "|  *  |", "|     |"]
+TOKENS_PARTS[TokenOrientations.VERTICAL][2] = ["|*    |", "|     |", "|    *|"]
+TOKENS_PARTS[TokenOrientations.VERTICAL][3] = ["|*    |", "|  *  |", "|    *|"]
+TOKENS_PARTS[TokenOrientations.VERTICAL][4] = ["|*   *|", "|     |", "|*   *|"]
+TOKENS_PARTS[TokenOrientations.VERTICAL][5] = ["|*   *|", "|  *  |", "|*   *|"]
+TOKENS_PARTS[TokenOrientations.VERTICAL][6] = ["|*   *|", "|*   *|", "|*   *|"]
+TOKENS_PARTS[TokenOrientations.VERTICAL][7] = ["|*   *|", "|* * *|", "|*   *|"]
+TOKENS_PARTS[TokenOrientations.VERTICAL][8] = ["|* * *|", "|*   *|", "|* * *|"]
+TOKENS_PARTS[TokenOrientations.VERTICAL][9] = ["|* * *|", "|* * *|", "|* * *|"]
+
+TOKENS_PARTS[TokenOrientations.HORIZONTAL]["head"] = "+|||+"
+TOKENS_PARTS[TokenOrientations.HORIZONTAL]["middle"] = "-|||-"
+TOKENS_PARTS[TokenOrientations.HORIZONTAL]["space"] = "-   -"
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][0] = ["-   -", "-   -", "-   -"]
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][1] = ["-   -", "- * -", "-   -"]
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][2] = ["-  *-", "-   -", "-*  -"]
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][3] = ["-  *-", "- * -", "-*  -"]
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][4] = ["-* *-", "-   -", "-* *-"]
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][5] = ["-* *-", "- * -", "-* *-"]
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][6] = ["-* *-", "-* *-", "-* *-"]
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][7] = ["-* *-", "-***-", "-* *-"]
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][8] = ["-***-", "-* *-", "-***-"]
+TOKENS_PARTS[TokenOrientations.HORIZONTAL][9] = ["-***-", "-***-", "-***-"]
 
 
-def areClose(token1, token2):
+def are_close(
+    token1: Union["LightToken", "Token"], token2: Union["LightToken", "Token"]
+) -> Union[int, bool]:
     """
-    Esta funcion retorna la configuracion de conexion que hay entre 2 fichas
+    This functions returns the connection configurations between two tokens.
 
-    Parametros
+    Parameters
     ----------
-    token1(LightToken | Tokent): ficha uno
-    token2(LightToken | Tokent): ficha dos
+    token1, token2: Union[LightToken, Token]
 
     Returns
     -------
-    int | False: entero entre 1 y 14 que representa que tipo de conexion tienen
-        las fichas, se retorna False si no estan conectadas
+    out: Union[int, bool]
+        Integer in the range [1, 14] that represents what kind of connection the
+        two tokens has. False is returned if the tokens are not connected.
     """
-
-    # para detectar que 2 fichas estan conectadas de forma validad, se hace uso
-    # de la separacion entre sus esquinas superior izquierda.
-    # la componente cero de position indica posicion en el eje y(filas), la
-    # componente 1 indica posicion en el eje x(columnas)
-
-    verticalDiference = token1.position[0] - token2.position[0]
-    horizontalDiference = token1.position[1] - token2.position[1]
+    # The verification for the conections of tokens are maded using the positions
+    # of the top-left corner of the tokens.
+    vertical_diference = token1.position[0] - token2.position[0]
+    horizontal_diference = token1.position[1] - token2.position[1]
 
     # configuracion de cercania 1
     # +-----+
@@ -47,13 +93,13 @@ def areClose(token1, token2):
     # si las fichas estan en la misma columna
     if token1.position[1] == token2.position[1]:
         # si ambas fichas estan orientadas de forma vertical
-        if token1.isVertical() and token2.isVertical():
+        if token1.is_vertical() and token2.is_vertical():
             # token1 esta abajo
-            if verticalDiference == 9:
-                return -PROXIMITYCONFIGURACION_1
+            if vertical_diference == 9:
+                return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_1
             # token2 esta abajo
-            if verticalDiference == -9:
-                return PROXIMITYCONFIGURACION_1
+            if vertical_diference == -9:
+                return ProximitiesConfigurations.PROXIMITYCONFIGURATION_1
 
     # configuracion de cercania 2
     # +-----------++-----------+
@@ -64,13 +110,13 @@ def areClose(token1, token2):
     # si ambas fichas estan en la misma fila
     if token1.position[0] == token2.position[0]:
         # si ambas fichas estan orientadas de forma horizontal
-        if token1.isHorizontal() and token2.isHorizontal():
+        if token1.is_horizontal() and token2.is_horizontal():
             # token1 esta a la derecha
-            if horizontalDiference == 13:
-                return -PROXIMITYCONFIGURACION_2
+            if horizontal_diference == 13:
+                return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_2
             # token2 esta a la derecha
-            if horizontalDiference == -13:
-                return PROXIMITYCONFIGURACION_2
+            if horizontal_diference == -13:
+                return ProximitiesConfigurations.PROXIMITYCONFIGURATION_2
 
     # configuracion de cercania 3
     # +-----++-----------+
@@ -84,11 +130,11 @@ def areClose(token1, token2):
     # +-----+
     if token1.position[0] == token2.position[0]:
         # token 1 es el de la derecha
-        if horizontalDiference == 7:
-            return -PROXIMITYCONFIGURACION_3
+        if horizontal_diference == 7:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_3
         # token 2 a la derecha
-        if horizontalDiference == -7:
-            return PROXIMITYCONFIGURACION_3
+        if horizontal_diference == -7:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_3
 
     # configuracion de cercania 4
     # +-----+
@@ -100,13 +146,13 @@ def areClose(token1, token2):
     # |* * *|+-----------+
     # |* * *|
     # +-----+
-    if abs(verticalDiference) == 2:
+    if abs(vertical_diference) == 2:
         # token1 el de la derecha
-        if horizontalDiference == 7:
-            return -PROXIMITYCONFIGURACION_4
+        if horizontal_diference == 7:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_4
         # token2 a la derecha
-        if horizontalDiference == -7:
-            return PROXIMITYCONFIGURACION_4
+        if horizontal_diference == -7:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_4
 
     # configuracion de cercania 5
     # +-----+
@@ -118,13 +164,13 @@ def areClose(token1, token2):
     # |* * *||* * *2* * *|
     # |* * *||* * *|* * *|
     # +-----++-----------+
-    if abs(verticalDiference) == 4:
+    if abs(vertical_diference) == 4:
         # token1 a la derecha
-        if horizontalDiference == 7:
-            return -PROXIMITYCONFIGURACION_5
+        if horizontal_diference == 7:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_5
         # token2 a la derecha
-        if horizontalDiference == -7:
-            return PROXIMITYCONFIGURACION_5
+        if horizontal_diference == -7:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_5
 
     # configuracion de cercania 6
     # +-----------++-----+
@@ -138,10 +184,10 @@ def areClose(token1, token2):
     #              +-----+
     if token1.position[0] == token2.position[0]:
         # token1 a la derecha
-        if horizontalDiference == 13:
-            return -PROXIMITYCONFIGURACION_6
-        if horizontalDiference == -13:
-            return PROXIMITYCONFIGURACION_6
+        if horizontal_diference == 13:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_6
+        if horizontal_diference == -13:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_6
 
     # configuracion de cercania 7
     #              +-----+
@@ -153,13 +199,13 @@ def areClose(token1, token2):
     # +-----------+|* * *|
     #              |* * *|
     #              +-----+
-    if abs(verticalDiference) == 2:
+    if abs(vertical_diference) == 2:
         # token1 a la derecha
-        if horizontalDiference == 13:
-            return -PROXIMITYCONFIGURACION_7
+        if horizontal_diference == 13:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_7
         # token2 a la derecha
-        if horizontalDiference == -13:
-            return PROXIMITYCONFIGURACION_7
+        if horizontal_diference == -13:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_7
 
     # configuracion de cercania 8
     #              +-----+
@@ -171,13 +217,13 @@ def areClose(token1, token2):
     # |* * *1* * *||* * *|
     # |* * *|* * *||* * *|
     # +-----------++-----+
-    if abs(verticalDiference) == 4:
+    if abs(vertical_diference) == 4:
         # token1 a la derecha
-        if horizontalDiference == 13:
-            return -PROXIMITYCONFIGURACION_8
+        if horizontal_diference == 13:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_8
         # token2 a la derecha
-        if horizontalDiference == -13:
-            return PROXIMITYCONFIGURACION_8
+        if horizontal_diference == -13:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_8
 
     # configuracion de cercania 9
     # +-----------+
@@ -196,11 +242,11 @@ def areClose(token1, token2):
     # +-----+
     if token1.position[1] == token2.position[1]:
         # token1 abajo
-        if verticalDiference == 5:
-            return -PROXIMITYCONFIGURACION_9
+        if vertical_diference == 5:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_9
         # token1 abajo
-        if verticalDiference == -5:
-            return PROXIMITYCONFIGURACION_9
+        if vertical_diference == -5:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_9
 
     # configuracion de cercania 10
     # +-----------+
@@ -217,13 +263,13 @@ def areClose(token1, token2):
     #    |* * *|
     #    |* * *|
     #    +-----+
-    if abs(horizontalDiference) == 3:
+    if abs(horizontal_diference) == 3:
         # token1 abajo
-        if verticalDiference == 5:
-            return -PROXIMITYCONFIGURACION_10
+        if vertical_diference == 5:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_10
         # token2 abajo
-        if verticalDiference == -5:
-            return PROXIMITYCONFIGURACION_10
+        if vertical_diference == -5:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_10
 
     # configuracion de cercania 11
     # +-----------+
@@ -240,13 +286,13 @@ def areClose(token1, token2):
     #       |* * *|
     #       |* * *|
     #       +-----+
-    if abs(horizontalDiference) == 6:
+    if abs(horizontal_diference) == 6:
         # token1 abajo
-        if verticalDiference == 5:
-            return -PROXIMITYCONFIGURACION_11
+        if vertical_diference == 5:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_11
         # token2 abajo
-        if verticalDiference == -5:
-            return PROXIMITYCONFIGURACION_11
+        if vertical_diference == -5:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_11
 
     # configuracion de cercania 12
     # +-----+
@@ -265,11 +311,11 @@ def areClose(token1, token2):
     # +-----------+
     if token1.position[1] == token2.position[1]:
         # token1 abajo
-        if verticalDiference == 9:
-            return -PROXIMITYCONFIGURACION_12
+        if vertical_diference == 9:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_12
         # token2 abajo
-        if verticalDiference == -9:
-            return PROXIMITYCONFIGURACION_12
+        if vertical_diference == -9:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_12
 
     # configuracion de cercania 13
     #    +-----+
@@ -286,13 +332,13 @@ def areClose(token1, token2):
     # |* * *2* * *|
     # |* * *|* * *|
     # +-----------+
-    if abs(horizontalDiference) == 3:
+    if abs(horizontal_diference) == 3:
         # token1 abajo
-        if verticalDiference == 9:
-            return -PROXIMITYCONFIGURACION_13
+        if vertical_diference == 9:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_13
         # token2 abajo
-        if verticalDiference == -9:
-            return PROXIMITYCONFIGURACION_13
+        if vertical_diference == -9:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_13
 
     # configuracion de cercania 14
     #       +-----+
@@ -309,113 +355,117 @@ def areClose(token1, token2):
     # |* * *2* * *|
     # |* * *|* * *|
     # +-----------+
-    if abs(horizontalDiference) == 6:
+    if abs(horizontal_diference) == 6:
         # token1 abajo
-        if verticalDiference == 9:
-            return -PROXIMITYCONFIGURACION_14
+        if vertical_diference == 9:
+            return -ProximitiesConfigurations.PROXIMITYCONFIGURATION_14
         # token2 abajo
-        if verticalDiference == -9:
-            return PROXIMITYCONFIGURACION_14
+        if vertical_diference == -9:
+            return ProximitiesConfigurations.PROXIMITYCONFIGURATION_14
 
     return False
 
 
-def getFreeSide(token1, token2):
+def get_free_side(
+    token1: Union["LightToken", "Token"], token2: Union["LightToken", "Token"]
+) -> Union[int, bool]:
     """
-    Esta funcion retorna que lado queda libre una vez se han conectado 2 fichas
+    This function returns what side is of a token is free once it has been
+    connected two other token.
 
-    Parametros
+    Parameters
     ----------
-    token1(LightToken | Token): ficha uno, el lado libre que se retorna
-        corresponde a esta ficha
-    token2(LightToken | Token): ficha 2, es la ficha que se conecta a la ficha
-        uno
+    token1: Union[LightToken, Token]
+        The free side that is return correspond to this token.
+    token2: Union[LightToken, Token]
+        This is the token that is connected to the token1
 
     Return
     ------
-    int | False: Entero que representa que lado quedo libre, puede ser
-        NUMERATOR, DENOMINATOR o BOTH y se retorna False si no estan conectadas
+    out: Union[int, False]
+        Integer that represents what side of a token is free, it could be
+        TokenParts.NUMERATOR, TokenParts.DENOMINATOR or TokenParts.BOTH. False
+        is returned if the tokens are not connected.
     """
     # se obtiene que tipo de conexion tienen las fichas
-    are_close = areClose(token1, token2)
+    are_close = are_close(token1, token2)
 
-    if are_close == PROXIMITYCONFIGURACION_1:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_1:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_2:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_2:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_3:
-        return DENOMINATOR
-    elif are_close == -PROXIMITYCONFIGURACION_3:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_4:
-        return BOTH
-    elif are_close == -PROXIMITYCONFIGURACION_4:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_5:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_5:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_6:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_6:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_7:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_7:
-        return BOTH
-    elif are_close == PROXIMITYCONFIGURACION_8:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_8:
-        return NUMERATOR
-    elif are_close == PROXIMITYCONFIGURACION_9:
-        return DENOMINATOR
-    elif are_close == -PROXIMITYCONFIGURACION_9:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_10:
-        return BOTH
-    elif are_close == -PROXIMITYCONFIGURACION_10:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_11:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_11:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_12:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_12:
-        return DENOMINATOR
-    elif are_close == PROXIMITYCONFIGURACION_13:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_13:
-        return BOTH
-    elif are_close == PROXIMITYCONFIGURACION_14:
-        return NUMERATOR
-    elif are_close == -PROXIMITYCONFIGURACION_14:
-        return NUMERATOR
+    if are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_1:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_1:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_2:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_2:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_3:
+        return TokenParts.DENOMINATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_3:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_4:
+        return TokenParts.BOTH
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_4:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_5:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_5:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_6:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_6:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_7:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_7:
+        return TokenParts.BOTH
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_8:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_8:
+        return TokenParts.NUMERATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_9:
+        return TokenParts.DENOMINATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_9:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_10:
+        return TokenParts.BOTH
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_10:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_11:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_11:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_12:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_12:
+        return TokenParts.DENOMINATOR
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_13:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_13:
+        return TokenParts.TokenParts.BOTH
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_14:
+        return TokenParts.NUMERATOR
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_14:
+        return TokenParts.NUMERATOR
     else:
         return False
 
 
-def _areCompatible(token1, token2):
+def _are_compatible(
+    token1: Union["LightToken", "Token"], token2: Union["LightToken", "Token"]
+) -> bool:
     """
-    Esta funcion retorna True cuando 2 fichas estan bien conectadas segun las
-    regla del domino y False en caso contrario
+    This function returns if two tokens are well connected according to the
+    dominos rules and returns False otherwise.
 
-    Parametros
+    Parameters
     ----------
-    token1(LightToken | Tokent): ficha uno
-    token2(LightToken | Tokent): ficha dos
-
+    token1, token2: Union[LightToken, Token]
     """
+    # Two tokens are well connected if are connected and the values of the
+    # numerators or denominators are the same in the connection point.
 
-    # 2 fichas estan bien conectadas si ademas de estar conectadas, los valores
-    # de los numeradores o denominadores coinciden en el punto de conexion
-
-    # se obtiene el tipo de conexion que tienen las fichas
-    are_close = areClose(token1, token2)
+    # The type of connection is getted.
+    are_close = are_close(token1, token2)
 
     # +-----+
     # |* * *|
@@ -435,10 +485,10 @@ def _areCompatible(token1, token2):
     # |* * *|
     # |* * *|
     # +-----+
-    if are_close == PROXIMITYCONFIGURACION_1:
+    if are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_1:
         # token1 esta arriba
         return token1.denominator == token2.numerator
-    elif are_close == -PROXIMITYCONFIGURACION_1:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_1:
         # token1 esta abajo
         return token1.numerator == token2.denominator
 
@@ -447,10 +497,10 @@ def _areCompatible(token1, token2):
     # |* * *1* * *||* * *2* * *|
     # |* * *|* * *||* * *|* * *|
     # +-----------++-----------+
-    elif are_close == PROXIMITYCONFIGURACION_2:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_2:
         # token1 esta a la izquierda
         return token1.denominator == token2.denominator
-    elif are_close == -PROXIMITYCONFIGURACION_2:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_2:
         # token1 esta a la derecha
         return token1.numerator == token2.denominator
 
@@ -463,10 +513,10 @@ def _areCompatible(token1, token2):
     # |* * *|
     # |* * *|
     # +-----+
-    elif are_close == PROXIMITYCONFIGURACION_3:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_3:
         # token1 esta a la izquierda
         return token1.numerator == token2.numerator
-    elif are_close == -PROXIMITYCONFIGURACION_3:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_3:
         # token1 esta a la derecha
         return token1.numerator == token2.numerator
 
@@ -479,10 +529,10 @@ def _areCompatible(token1, token2):
     # |* * *|+-----------+
     # |* * *|
     # +-----+
-    elif are_close == PROXIMITYCONFIGURACION_4:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_4:
         # token1 esta a la izquierda
         return token1.numerator == token1.denominator == token2.numerator
-    elif are_close == -PROXIMITYCONFIGURACION_4:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_4:
         # token1 esta a la derecha
         return token1.numerator == token2.numerator == token2.denominator
 
@@ -495,10 +545,10 @@ def _areCompatible(token1, token2):
     # |* * *||* * *2* * *|
     # |* * *||* * *|* * *|
     # +-----++-----------+
-    elif are_close == PROXIMITYCONFIGURACION_5:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_5:
         # token1 esta a la izquierda
         return token1.denominator == token2.numerator
-    elif are_close == -PROXIMITYCONFIGURACION_5:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_5:
         # token1 esta a la derecha
         return token1.numerator == token2.denominator
 
@@ -511,10 +561,10 @@ def _areCompatible(token1, token2):
     #              |* * *|
     #              |* * *|
     #              +-----+
-    elif are_close == PROXIMITYCONFIGURACION_6:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_6:
         # token1 esta a la izquierda
         return token1.denominator == token2.numerator
-    elif are_close == -PROXIMITYCONFIGURACION_6:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_6:
         # token1 esta a la derecha
         return token1.numerator == token2.denominator
 
@@ -527,10 +577,10 @@ def _areCompatible(token1, token2):
     # +-----------+|* * *|
     #              |* * *|
     #              +-----+
-    elif are_close == PROXIMITYCONFIGURACION_7:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_7:
         # token1 esta a la izquierda
         return token1.denominator == token2.numerator == token2.denominator
-    elif are_close == -PROXIMITYCONFIGURACION_7:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_7:
         # token1 esta a la derecha
         return token1.numerator == token1.denominator == token2.denominator
 
@@ -543,10 +593,10 @@ def _areCompatible(token1, token2):
     # |* * *1* * *||* * *|
     # |* * *|* * *||* * *|
     # +-----------++-----+
-    elif are_close == PROXIMITYCONFIGURACION_8:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_8:
         # token1 esta a la izquierda
         return token1.denominator == token2.denominator
-    elif are_close == -PROXIMITYCONFIGURACION_8:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_8:
         # token1 esta a la derecha
         return token1.denominator == token2.denominator
 
@@ -564,10 +614,10 @@ def _areCompatible(token1, token2):
     # |* * *|
     # |* * *|
     # +-----+
-    elif are_close == PROXIMITYCONFIGURACION_9:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_9:
         # token1 esta arriba
         return token1.numerator == token2.numerator
-    elif are_close == -PROXIMITYCONFIGURACION_9:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_9:
         # token1 esta abajo
         return token1.numerator == token2.numerator
 
@@ -585,10 +635,10 @@ def _areCompatible(token1, token2):
     #    |* * *|
     #    |* * *|
     #    +-----+
-    elif are_close == PROXIMITYCONFIGURACION_10:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_10:
         # token1 esta arriba
         return token1.numerator == token1.denominator == token2.denominator
-    elif are_close == -PROXIMITYCONFIGURACION_10:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_10:
         # token1 esta abajo
         return token1.numerator == token2.numerator == token2.denominator
 
@@ -606,10 +656,10 @@ def _areCompatible(token1, token2):
     #       |* * *|
     #       |* * *|
     #       +-----+
-    elif are_close == PROXIMITYCONFIGURACION_11:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_11:
         # token1 esta arriba
         return token1.denominator == token2.numerator
-    elif are_close == -PROXIMITYCONFIGURACION_11:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_11:
         # token1 esta abajo
         return token1.numerator == token2.denominator
 
@@ -627,10 +677,10 @@ def _areCompatible(token1, token2):
     # |* * *2* * *|
     # |* * *|* * *|
     # +-----------+
-    elif are_close == PROXIMITYCONFIGURACION_12:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_12:
         # token1 esta arriba
         return token1.denominator == token2.numerator
-    elif are_close == -PROXIMITYCONFIGURACION_12:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_12:
         # token1 esta abajo
         return token1.numerator == token2.denominator
 
@@ -648,10 +698,10 @@ def _areCompatible(token1, token2):
     # |* * *2* * *|
     # |* * *|* * *|
     # +-----------+
-    elif are_close == PROXIMITYCONFIGURACION_13:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_13:
         # token1 esta arriba
         return token1.denominator == token2.numerator == token2.denominator
-    elif are_close == -PROXIMITYCONFIGURACION_13:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_13:
         # token1 esta abajo
         return token1.numerator == token1.denominator == token2.denominator
 
@@ -669,10 +719,10 @@ def _areCompatible(token1, token2):
     # |* * *2* * *|
     # |* * *|* * *|
     # +-----------+
-    elif are_close == PROXIMITYCONFIGURACION_14:
+    elif are_close == ProximitiesConfigurations.PROXIMITYCONFIGURATION_14:
         # token1 esta arriba
         return token1.denominator == token2.denominator
-    elif are_close == -PROXIMITYCONFIGURACION_14:
+    elif are_close == -ProximitiesConfigurations.PROXIMITYCONFIGURATION_14:
         # token1 esta abajo
         return token1.denominator == token2.denominator
     else:
@@ -681,43 +731,47 @@ def _areCompatible(token1, token2):
 
 class LightToken:
     """
-    Esta clase representa una ficha de domino
+    This class represents a token.
 
-    Parametros
+    Parameters
     ----------
-    numerator(int): Entero que representa la parte superior o derecha de la
-        fichas
-    denominator(int): Entero que representa la parte inferior o izquierda de la
-        fichas
-    pos((int, int)): Dupla de enteros que representa la posicion de la ficha,
-        primera componente es posicion en fila y segunda componente es posicion
-        en columna
-    orientation(int): Entero que representa la orientacion de la ficha, puede
-        ser HORIZONTAL o VERTICAL
+    numerator: int
+        Integer that represents tha superior or right part of the token.
+    denominator: int
+        Integer that represents tha inferior or left part of the token.
+    pos: Tuple[int, int]
+        Position of the token.
+    orientation: int
+        This represents the orientation of the token, it can be
+        TokenOrientations.HORIZONTAL or TokenOrientations.VERTICAL
     """
 
-    def __init__(self, numerator, denominator, pos=[0, 0], orientation=VERTICAL):
+    def __init__(
+        self,
+        numerator: int,
+        denominator: int,
+        pos: List[int] = [0, 0],
+        orientation: TokenOrientations = TokenOrientations.VERTICAL,
+    ) -> None:
         self.numerator = numerator
         self.denominator = denominator
 
         self.position = pos
         self.orientation = orientation
 
-    def isVertical(self):
+    def is_vertical(self) -> bool:
         """
-        Este metodo retorna True si la ficha esta orientada de forma vertical,
-        False en caso contrario
+        This method check if a token is vertically oriented.
         """
-        return self.orientation == VERTICAL
+        return self.orientation == TokenOrientations.VERTICAL
 
-    def isHorizontal(self):
+    def is_horizontal(self) -> bool:
         """
-        Este metodo retorna True si la ficha esta orientada de forma
-        horizontal, False en caso contrario
+        This method check if a token is horizontally oriented.
         """
-        return self.orientation == HORIZONTAL
+        return self.orientation == TokenOrientations.HORIZONTAL
 
-    def areConcatenable(self, token):
+    def are_concatenable(self, token: Union["LightToken", "Token"]) -> bool:
         """
         Este metodo retorna True si dos fichas pueden ser compatibles, False
         en caso contrario
@@ -735,35 +789,33 @@ class LightToken:
         else:
             return False
 
-    def areCompatible(self, token):
+    def are_compatible(self, token: Union["LightToken", "Token"]) -> bool:
         """
         Este metodo chequea si la ficha es compatible con alguna otra
         """
         # Dos fichas son compatibles si se pueden poner un despues de la otra
         # siquiendo las reglas del domino, es decir, estan bien conectadas
-        return _areCompatible(self, token)
+        return _are_compatible(self, token)
 
 
 class Token(LightToken, Writable):
     """
-    Esta clase representa una ficha de domino que puede ser mostrada en
-    pantalla
+    This class represents a token that can be show on screen.
 
-    Parametros
+    Parameters
     ----------
-    numerator(int): Entero que representa la parte superior o derecha de la
-        fichas
-    denominator(int): Entero que representa la parte inferior o izquierda de la
-        fichas
-    pos((int, int)): Dupla de enteros que representa la posicion de la ficha,
-        primera componente es posicion en fila y segunda componente es posicion
-        en columna
-    orientation(int): Entero que representa la orientacion de la ficha, puede
-        ser HORIZONTAL o VERTICAL
+    numerator: int
+        Integer that represents tha superior or right part of the token.
+    denominator: int
+        Integer that represents tha inferior or left part of the token.
+    pos: Tuple[int, int]
+        Position of the token.
+    orientation: int
+        This represents the orientation of the token, it can be
+        TokenOrientations.HORIZONTAL or TokenOrientations.VERTICAL
     """
 
-    def __init__(self, *args, **kwargs):
-        # se llama al inicializador de LightToken
+    def __init__(self, *args, **kwargs) -> None:
         LightToken.__init__(self, *args, **kwargs)
 
         # se obtiene la representacion en string de la ficha
@@ -772,56 +824,56 @@ class Token(LightToken, Writable):
         # se llama al inicializador de Writable para poder mostrar en pantalla
         Writable.__init__(self, string, self.position)
 
-    def getString(self):
+    def getString(self) -> List[str]:
         """
-        Este metodo obtiene la representacion en string de la ficha
+        This method returns the string representation of the token.
         """
-        string = []
+        string: List[str] = []
 
-        if self.orientation == VERTICAL:
-            string.append(TOKENS_PARTS[VERTICAL]["head"])
-            string.extend(TOKENS_PARTS[VERTICAL][self.numerator])
-            string.append(TOKENS_PARTS[VERTICAL]["middle"])
-            string.extend(TOKENS_PARTS[VERTICAL][self.denominator])
-            string.append(TOKENS_PARTS[VERTICAL]["head"])
+        if self.orientation == TokenOrientations.VERTICAL:
+            string.append(TOKENS_PARTS[TokenOrientations.VERTICAL]["head"])
+            string.extend(TOKENS_PARTS[TokenOrientations.VERTICAL][self.numerator])
+            string.append(TOKENS_PARTS[TokenOrientations.VERTICAL]["middle"])
+            string.extend(TOKENS_PARTS[TokenOrientations.VERTICAL][self.denominator])
+            string.append(TOKENS_PARTS[TokenOrientations.VERTICAL]["head"])
         else:
             for i in range(5):
-                s = TOKENS_PARTS[HORIZONTAL]["head"][i]
+                s = TOKENS_PARTS[TokenOrientations.HORIZONTAL]["head"][i]
 
-                s += TOKENS_PARTS[HORIZONTAL][self.numerator][0][i]
-                s += TOKENS_PARTS[HORIZONTAL]["space"][i]
-                s += TOKENS_PARTS[HORIZONTAL][self.numerator][1][i]
-                s += TOKENS_PARTS[HORIZONTAL]["space"][i]
-                s += TOKENS_PARTS[HORIZONTAL][self.numerator][2][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL][self.numerator][0][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL]["space"][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL][self.numerator][1][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL]["space"][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL][self.numerator][2][i]
 
-                s += TOKENS_PARTS[HORIZONTAL]["middle"][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL]["middle"][i]
 
-                s += TOKENS_PARTS[HORIZONTAL][self.denominator][0][i]
-                s += TOKENS_PARTS[HORIZONTAL]["space"][i]
-                s += TOKENS_PARTS[HORIZONTAL][self.denominator][1][i]
-                s += TOKENS_PARTS[HORIZONTAL]["space"][i]
-                s += TOKENS_PARTS[HORIZONTAL][self.denominator][2][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL][self.denominator][0][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL]["space"][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL][self.denominator][1][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL]["space"][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL][self.denominator][2][i]
 
-                s += TOKENS_PARTS[HORIZONTAL]["head"][i]
+                s += TOKENS_PARTS[TokenOrientations.HORIZONTAL]["head"][i]
 
                 string.append(s)
 
         return string
 
-    def reflect(self):
+    def reflect(self) -> None:
         """
-        Este metodo invierte la ficha
+        This method make a reflection of the token.
         """
         self.numerator, self.denominator = self.denominator, self.numerator
         self.text = self.getString()
 
-    def rotate(self):
+    def rotate(self) -> None:
         """
-        Este metodo cambia la orientacion de la ficha
+        This method rotate the token 90 degrees.
         """
-        if self.orientation == VERTICAL:
-            self.orientation = HORIZONTAL
+        if self.orientation == TokenOrientations.VERTICAL:
+            self.orientation = TokenOrientations.HORIZONTAL
         else:
-            self.orientation = VERTICAL
+            self.orientation = TokenOrientations.VERTICAL
 
         self.text = self.getString()

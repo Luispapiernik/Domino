@@ -1,5 +1,4 @@
-# libreria que se usara para manejar entrada del usuario por teclado
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 
 from domino.manager import Manager
 
@@ -23,7 +22,7 @@ use la tecla p y para salir del programa use la letra q
 """
 
 
-def validateArgs(args):
+def validate_args(_: Namespace) -> None:
     """
     Esta funcion lanza un error si los parametros no tienen valores validos
     """
@@ -50,16 +49,16 @@ def main():
     )
 
     args = parser.parse_args()
+    validate_args(args)
 
-    # se validan los argumentos
-    validateArgs(args)
+    try:
+        manager = Manager(args)
+        manager.loop()
+        manager.end()
+    except Exception as e:
+        manager.end()
 
-    # se ejecuta la aplicacion
-    manager = Manager(args)
-
-    manager.loop()
-
-    manager.end()
+        print(e)
 
 
 if __name__ == "__main__":

@@ -1,84 +1,89 @@
-from domino.baseObjects import *
-from domino.utils import *
+import curses
+
+from domino.container import BaseContainer
+from domino.schemas import Events, Key
+from domino.utils import apply_event, get_center_column, get_center_row
+from domino.writable import Writable
 
 
 class PageNotImplemented(BaseContainer):
     """
-    Esta clase reprensenta alguna ventana que no ha sido implementada
+    This class represent some window that is not implemented.
     """
 
-    def __init__(self, height, width):
-        window = c.newwin(height, width, 0, 0)
+    def __init__(self, height: int, width: int) -> None:
+        window = curses.newwin(height, width, 0, 0)
 
         super().__init__(window)
 
-        centerPositionX = getCenterRow(height)
+        center_position_x = get_center_row(height)
 
-        self.addElements(
+        self.add_elements(
             Writable(
-                ["No implementado"],
-                (centerPositionX, getCenterColumn("No implementado", width)),
+                "Not implemented",
+                (center_position_x, get_center_column("Not implemented", width)),
             )
         )
 
-    @applyEvent(10, COVER)  # ENTER
-    def inputHandler(self, char):
+    # When the ENTER key is pressed.
+    @apply_event(10, Events.COVER)
+    def input_handler(self, _: Key) -> Events:
         pass
 
 
 class Cover(BaseContainer):
     """
-    Esta clase reprensenta la primera ventana del aplicacion, en ella estan las
-    diferentes opciones que puede elejir un jugador: Jugar, Opciones,...
+    This class represent the first application window, in this the differents
+    options (Play, Options, Help, ...) are displayed.
 
-    Parametros
+    Parameters
     ----------
-    maxHeight(int): altura de la ventana
-    maxWidth(int): ancho de la ventana
+    max_height: int
+        Window height.
+    max_width: int
+        Window width.
     """
 
-    def __init__(self, maxHeight, maxWidth):
-        # se crea la ventana en donde se dibujaran los elementos
-        window = c.newwin(maxHeight, maxWidth, 0, 0)
-
-        # se llama al inicializador del padre
+    def __init__(self, max_height: int, max_width: int) -> None:
+        window = curses.newwin(max_height, max_width, 0, 0)
         super().__init__(window)
 
         # para dibujar los elementos de forma centrada se obtiene la fila que
         # esta en el centro
-        centerPositionX = getCenterRow(maxHeight)
+        center_position_x = get_center_row(max_height)
 
         # se agregan los elementos
-        self.addElements(
-            Writable(["Jugar"], (centerPositionX, getCenterColumn("Jugar", maxWidth)))
-        )
-
-        self.addElements(
+        self.add_elements(
             Writable(
-                ["Opciones"],
-                (centerPositionX + 1, getCenterColumn("Opciones", maxWidth)),
+                "Jugar", (center_position_x, get_center_column("Jugar", max_width))
             )
         )
 
-        self.addElements(
+        self.add_elements(
             Writable(
-                ["Ayuda"], (centerPositionX + 2, getCenterColumn("Ayuda", maxWidth))
+                "Opciones",
+                (center_position_x + 1, get_center_column("Opciones", max_width)),
             )
         )
 
-        self.addElements(
+        self.add_elements(
             Writable(
-                ["Credito"], (centerPositionX + 3, getCenterColumn("Credito", maxWidth))
+                "Ayuda", (center_position_x + 2, get_center_column("Ayuda", max_width))
             )
         )
 
-    @applyEvent(c.KEY_RESIZE, QUIT)  # cuando se cambia dimension de la ventana
-    @applyEvent(113, QUIT)  # q
-    def inputHandler(self, char):
-        """
-        Este metodo se encarga de manejar entrada del usuario, la clase Cover
-        solo gestiona el cambio de ventana
-        """
+        self.add_elements(
+            Writable(
+                "Credito",
+                (center_position_x + 3, get_center_column("Credito", max_width)),
+            )
+        )
+
+    # When the dimension of the window is changed.
+    @apply_event(curses.KEY_RESIZE, Events.QUIT)
+    # When the key Q is pressed.
+    @apply_event(113, Events.QUIT)
+    def input_handler(self, char: Key) -> Events:
         # self.linter esta apuntando al elmento que es resaltado, si se aumenta
         # o disminuye este valor en uno el objeto resaltado cambia, si se
         # preciona la tecla enter en uno de los elementos se pasa a la ventana
@@ -89,21 +94,21 @@ class Cover(BaseContainer):
             self.linter += 1
         elif char == 10:  # ENTER
             if self.linter == 0:
-                return PLAY
+                return Events.PLAY
             elif self.linter == 1:
-                return OPTIONS
+                return Events.OPTIONS
             elif self.linter == 2:
-                return HELP
+                return Events.HELP
             elif self.linter == 3:
-                return CREDITS
+                return Events.CREDITS
             else:
-                return NONE
+                return Events.NONE
         else:
             pass
 
         # self.linter no debe estar por fuera de [0, 3], si esta por fuera con
         # operacion modulo se vuelve a poner en el conjunto [0, 3]
-        self.linter %= self.linterableObjects
+        self.linter %= self.linterable_objects
 
 
 class Options(PageNotImplemented):
