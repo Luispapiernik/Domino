@@ -90,9 +90,14 @@ class Cover(BaseContainer):
         # correspondiente
         if char == 259:  # UP
             self.linter -= 1
-        elif char == 258:  # DOWN
+        if char == 258:  # DOWN
             self.linter += 1
-        elif char == 10:  # ENTER
+
+        # self.linter no debe estar por fuera de [0, 3], si esta por fuera con
+        # operacion modulo se vuelve a poner en el conjunto [0, 3]
+        self.linter %= self.linterable_objects
+
+        if char == 10:  # ENTER
             if self.linter == 0:
                 return Events.PLAY
             elif self.linter == 1:
@@ -105,10 +110,6 @@ class Cover(BaseContainer):
                 return Events.NONE
         else:
             pass
-
-        # self.linter no debe estar por fuera de [0, 3], si esta por fuera con
-        # operacion modulo se vuelve a poner en el conjunto [0, 3]
-        self.linter %= self.linterable_objects
 
 
 class Options(PageNotImplemented):

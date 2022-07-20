@@ -29,10 +29,9 @@ class Player:
             "Stolen Tokens: %d" % self.stolen_tokens,
             "Skipped Turns: %d" % self.skipped_turns,
         ]
-
         return information
 
-    def get_token(self, numerator: int, denominator: int) -> Token:
+    def get_token(self, numerator: int, denominator: int) -> Optional[Token]:
         """
         This method removes and returns a player token.
 
@@ -47,6 +46,7 @@ class Player:
             if token.numerator == numerator and token.denominator == denominator:
                 self.tokens.remove(token)
                 return token
+        return None
 
 
 class Human(Player):
@@ -82,25 +82,20 @@ class Computer(Player):
         """
         # si no hay fichas en el tablero, se elijira una al azar entre las
         # fichas propias
-        if len(tokens) == 0:
-            token = choice(self.tokens)
-            return token
+        if tokens == []:
+            return choice(self.tokens)
 
         # si hay fichas en el tablero, se debe verificar si se pueden hacer
         # alguna jugada
         posible_tokens = []
-
-        # se itera sobre las fichas propias
         for token in self.tokens:
             if token.are_concatenable(right) or token.are_concatenable(left):
                 posible_tokens.append(token)
 
         # si no hay jugadas disponibles
-        if len(posible_tokens) == 0:
+        if posible_tokens == []:
             self.skipped_turns += 1
-
             return None
 
         # se escoge una ficha al azar entre todas las posibles jugadas
-        token = choice(posible_tokens)
-        return token
+        return choice(posible_tokens)

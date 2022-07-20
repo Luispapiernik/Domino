@@ -1,3 +1,4 @@
+import curses
 from argparse import ArgumentParser, Namespace
 
 from domino.manager import Manager
@@ -56,7 +57,7 @@ def main():
         manager.loop()
         manager.end()
     except Exception as e:
-        manager.end()
+        curses.endwin()
 
         print(e)
 

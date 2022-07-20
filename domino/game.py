@@ -2,6 +2,7 @@ import curses
 from random import choice, randint
 from typing import List
 
+from domino.config import settings
 from domino.container import BaseContainer
 from domino.info import GameInfo
 from domino.playerboard import PlayerTable
@@ -22,14 +23,12 @@ class Game(BaseContainer):
         This represents the window height.
     width: int
         This represents the window width.
-    tokens_per_player: int
-        This specify the number of tokens per player.
-    max_number: int
-        This indicates the max number showed in a token.
     """
 
     def __init__(
-        self, height: int, width: int, tokens_per_player: int = 9, max_number: int = 9
+        self,
+        height: int,
+        width: int,
     ) -> None:
         window = curses.newwin(height, width, 0, 0)
 
@@ -49,18 +48,14 @@ class Game(BaseContainer):
 
         # se crean las fichas del juego
         self.tokens = [
-            Token(i, j) for i in range(max_number + 1) for j in range(i, max_number + 1)
+            Token(i, j)
+            for i in range(settings.token_max_number + 1)
+            for j in range(i, settings.token_max_number + 1)
         ]
 
-        # se repareten fichas para cada jugador
-        if self.get_first() == Players.PLAYER:
-            self.player = Human(self.get_player_tokens(tokens_per_player))
-            self.computer = Computer(self.get_player_tokens(tokens_per_player))
-            self.turn = Players.PLAYER
-        else:
-            self.computer = Computer(self.get_player_tokens(tokens_per_player))
-            self.player = Human(self.get_player_tokens(tokens_per_player))
-            self.turn = Players.COMPUTER
+        self.player = Human(self.get_player_tokens())
+        self.computer = Computer(self.get_player_tokens())
+        self.turn = self.get_first()
 
         # como se esta en proceso de desarrollo, el jugador siempre hara la
         # primera jugada, si se quita esta linea la probabilidad de que el
@@ -80,13 +75,13 @@ class Game(BaseContainer):
         """
         return choice([Players.PLAYER, Players.COMPUTER])
 
-    def get_player_tokens(self, token_number: int) -> List[Token]:
+    def get_player_tokens(self) -> List[Token]:
         """
         This method returns a given number of token from all the possible tokens.
         """
         tokens: List[Token] = []
 
-        while len(tokens) < token_number:
+        while len(tokens) < settings.tokens_per_player:
             # se van elijiendo fichas de forma aleatoria
             tokens.append(self.tokens.pop(randint(0, len(self.tokens) - 1)))
             # se posicionan las fichas de forma que esten en la misma fila y
@@ -95,26 +90,43 @@ class Game(BaseContainer):
 
         return tokens
 
-    @apply_event(113, Events.COVER)  # q
+    def make_computer_play(self):
+        # se obtiene jugada del computador, si token toma el valor de None
+        # es porque no habia jugada disponible
+        token = self.computer.make_move(
+            self.table.get_tokens(), self.table.right, self.table.left
+        )
+
+        if (token is not None) and self.table.is_valid_token(token):
+            # cuando la jugada es valida se obtiene la ficha
+            token = self.computer.get_token(token.numerator, token.denominator)
+
+            # se ubica la ficha del computador
+            self.table.locate_computer_token(token)
+
+        # se actualiza la informacion de la maquina
+        self.info.update_info(self.computer.get_info(), player=Players.COMPUTER)
+
+        # ahora es turno del jugador
+        self.turn = Players.PLAYER
+
+    # When the key "Q" is pressed
+    @apply_event(113, Events.COVER)
     def input_handler(self, char: Key) -> Events:
-        # la tecla TAB se usa para cambiar de panel, entre el panel con las
-        # fichas del jugador y el panel con las fichas jugadas
-        if char == 9:  # TAB
-            # solo se puede cambiar panel si no se esta ubicando una ficha
-            if not self.table.is_locating_token:
-                self.linter += 1
-        # cuando se presiona la tecla p el jugador ha cedido el turno
-        if char == 112:  # p
-            self.player.skipped_turns += 1
-            self.turn = Players.COMPUTER
-        else:
-            pass
+        if char == 9 and not self.table.is_locating_token:  # TAB
+            self.linter += 1
+            # para que self.linter no tome valores no posibles
+            self.linter %= self.linterable_objects
+            return Events.NONE
 
-        # para que self.linter no tome valores no posibles
-        self.linter %= self.linterable_objects
-
-        # se maneja el turno del jugador
         if self.turn == Players.PLAYER:
+            # cuando se presiona la tecla p el jugador ha cedido el turno
+            if char == 112:  # p
+                self.player.skipped_turns += 1
+                self.turn = Players.COMPUTER
+                self.make_computer_play()
+                return Events.NONE
+
             # si el panel en el que se esta es el de las fichas del jugador
             if self.linter == 1:
                 # se obtiene la ficha, si token toma el valor de None es porque
@@ -151,28 +163,8 @@ class Game(BaseContainer):
             # se actualiza la informacion del jugador
             self.info.update_info(self.player.get_info(), player=Players.PLAYER)
 
-        # turno de la maquina
-        else:
-            # se obtiene jugada del computador, si token toma el valor de None
-            # es porque no habia jugada disponible
-            token = self.computer.make_move(
-                self.table.get_tokens(), self.table.right, self.table.left
-            )
-
-            if (token is not None) and self.table.is_valid_token(token):
-                # cuando la jugada es valida se obtiene la ficha
-                token = self.computer.get_token(token.numerator, token.denominator)
-
-                # se ubica la ficha del computador
-                self.table.locate_computer_token(token)
-
-            # se actualiza la informacion de la maquina
-            self.info.update_info(self.computer.get_info(), player=Players.COMPUTER)
-
-            # ahora es turno del jugador
-            self.turn = Players.PLAYER
-
-        return Events.NONE
+        if self.turn == Players.COMPUTER:
+            self.make_computer_play()
 
     def write(self) -> None:
         """
@@ -181,9 +173,9 @@ class Game(BaseContainer):
         # color of the panel to be hightlighted
         color_linter = None
         for i in range(len(self.elements)):
-            element, _ = self.elements[i]
+            element, is_linterable = self.elements[i]
 
-            if i == self.linter:
+            if i == self.linter and is_linterable:
                 color_linter = 2
 
             element.write(color_linter)
